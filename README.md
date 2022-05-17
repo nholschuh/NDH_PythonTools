@@ -88,16 +88,20 @@ The following sections provide a list of the functions that may be useful to you
 
 ### ICESat 2
 <small>
-* is2_fileselect: This function identifies either ATL06 or ATL11 files that fall within a bounding-box, as well as the associated SEGIDs for that region. 
-* is2_timeconvert: This function converts the delta_T variable in ICESat-2 data to decimal years
-* Tutorials/ICESat2_Read_and_Plotting: This notebook describes the structure of ICESat-2 data, but relies on <a href="https://github.com/tsutterley/read-ICESat-2">Tyler Sutterly's reader functions.</a>
-* read_h5: This is just a simplified h5 file reader, which can read in any ICESat-2 data file.
+<ul>
+  <li>is2_fileselect: This function identifies either ATL06 or ATL11 files that fall within a bounding-box, as well as the associated SEGIDs for that region. </li>
+  <li>is2_timeconvert: This function converts the delta_T variable in ICESat-2 data to decimal years</li>
+  <li>read_h5: This is just a simplified h5 file reader, which can read in any ICESat-2 data file.</li>
+  <li>Tutorials/ICESat2_Read_and_Plotting: This notebook describes the structure of ICESat-2 data, but relies on <a href="https://github.com/tsutterley/read-ICESat-2">Tyler Sutterly's reader functions.</a></li>
+</ul>  
 </small>
 
 ### Ice Penetrating Radar Data
 <small>
-* depth_shift: This function takes in a radar dataset and converts it from two-way travel time to depth.
-* elevation_shift: This function takes in a radar dataset and converts it from two-way travel time to absolute elevation (WGS84) 
+<ul>
+<li>depth_shift: This function takes in a radar dataset and converts it from two-way travel time to depth.</li>
+<li>elevation_shift: This function takes in a radar dataset and converts it from two-way travel time to absolute elevation (WGS84). </li>
+</ul>
 </small>
 
 <!-- CONTRIBUTING -->
