@@ -1,0 +1,11 @@
+import os
+import subprocess
+from importlib.machinery import SourceFileLoader
+
+# pkg=os.environ["OnePath"]+'Research_Projects/34_IceSat2/DownloadScripts/get_ATL06.py'
+pkg='./nsidc_icesat2_sync.py'
+cmd=pkg+" --user holschuh --track 256 --release 004 --granule 12 --flatten ATL06"
+
+if __name__ == '__main__':
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+    out, err = p.communicate()
