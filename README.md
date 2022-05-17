@@ -40,11 +40,12 @@
 </p>
 <br>
 <p align="left">
-    	This repository contains a set of functions for analyzing <a href="https://nsidc.org/data/icesat-2">ICESat-2 Data,</a> ice penetrating radar data from the <a href="https://data.cresis.ku.edu/">Center for Remote Sensing of Ice Sheets</a>, and other cryospheric geophysical data. In addition, there are a series of tutorial notebooks that break-down how to read and interpret many of these polar geophysical datasets.
+	This repository contains a set of functions for analyzing <a href="https://nsidc.org/data/icesat-2">ICESat-2 Data,</a> ice penetrating radar data from the <a href="https://data.cresis.ku.edu/">Center for Remote Sensing of Ice Sheets</a>, and other cryospheric geophysical data. In addition, there are a series of tutorial notebooks that break-down how to read and interpret many of these polar geophysical datasets.
 	<br>
 </p>
-<p align="center>
-	This work is primarily in support of the following awards: 
+<p align="center">
+	This work is primarily in support of the following awards:
+ 
 	<br> <a href="https://nspires.nasaprs.com/external/solicitations/summary.do?solId=%7bE0000836-B11D-EBF3-80E3-260784082E4B%7d&path=&method=init">NASA-80NSSC20K0958,</a> <a href="https://nspires.nasaprs.com/external/solicitations/summary.do?solId=%7BC33D2D0F-904C-4B9A-A954-C0FD8DECD7C2%7D&path=&method=init">NASA-80NSSC21K0753,</a> <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2019719&HistoricalAwards=false">NSF-2019719,</a> and <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2118285&HistoricalAwards=false">NSF-2118285.</a>
 	<br>
 </p>
