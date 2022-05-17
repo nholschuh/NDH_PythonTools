@@ -44,7 +44,7 @@
 	<br>
 </p>
 <p align="center">
-	This work is primarily in support of the following awards:
+	This work is primarily in support of the following awards\:
  
 	<br> <a href="https://nspires.nasaprs.com/external/solicitations/summary.do?solId=%7bE0000836-B11D-EBF3-80E3-260784082E4B%7d&path=&method=init">NASA-80NSSC20K0958,</a> <a href="https://nspires.nasaprs.com/external/solicitations/summary.do?solId=%7BC33D2D0F-904C-4B9A-A954-C0FD8DECD7C2%7D&path=&method=init">NASA-80NSSC21K0753,</a> <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2019719&HistoricalAwards=false">NSF-2019719,</a> and <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2118285&HistoricalAwards=false">NSF-2118285.</a>
 	<br>
