@@ -31,7 +31,7 @@
   </a>
 -->
 
-<h3 align="center">NDH_Tools</h3>
+<h3 align="center">NDH_PythonTools</h3>
 
   <p align="center">
     <a href="https://github.com/nholschuh/NDH_PythonTools/issues">Report Bug</a>
