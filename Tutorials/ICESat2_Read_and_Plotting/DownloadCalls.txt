@@ -1,3 +1,0 @@
-### python3 ./nsidc_icesat2_sync.py --user holschuh --track 256 --release 004 --granule 12 --flatten ATL06
-### python3 ./nsidc_icesat2_associated.py --user holschuh --product ATL03 --flatten ATL06_20201010232221_02560910_004_01.h5
-### python3 ./nsidc_icesat2_sync.py --user holschuh --track 256 --release 004 --flatten ATL11
