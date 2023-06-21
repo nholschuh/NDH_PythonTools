@@ -32,8 +32,15 @@ def generate_animation(fps,title='Matplotlib Animation',comment='Matplotlib Anim
     
     
     # Define the meta data for the movie
-    FFMpegWriter = manimation.writers['ffmpeg']
-    metadata = dict(title=title, artist='Matplotlib',
+    try:
+        FFMpegWriter = manimation.writers['ffmpeg']
+        metadata = dict(title=title, artist='Matplotlib',
                     comment=comment)
-    writer = FFMpegWriter(fps=fps, metadata=metadata)
+        writer = FFMpegWriter(fps=fps, metadata=metadata)
+    except:
+        PillowWriter = manimation.writers['pillow']
+        metadata = dict(title=title, artist='Matplotlib',
+                    comment=comment)
+        writer = PillowWriter(fps=fps, metadata=metadata)
+
     return writer
