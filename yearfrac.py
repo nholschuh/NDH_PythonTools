@@ -55,8 +55,9 @@ def yearfrac(date):
             years = i.astype('datetime64[Y]').astype(int) + 1970
             months = i.astype('datetime64[M]').astype(int) % 12 + 1
             days = i - i.astype('datetime64[M]') + 1
-            days = (days*1.15741e-14).astype('int')
+            days = (days).astype('int')
             
+            #print(years,months,days)
             date_output.append(float(years)+float(months)/12+float(days)/365.25)
             
     return date_output

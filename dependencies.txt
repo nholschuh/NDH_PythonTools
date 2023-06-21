@@ -1,0 +1,6 @@
+astropy
+hdf5storage
+ezdxf
+mat73
+imageio
+ffmpeg-python

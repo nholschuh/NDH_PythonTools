@@ -32,5 +32,6 @@ def flatten_list(list_of_lists):
         else:
             flat_list.append(sublist)
 
-    flat_list = np.array(flat_list)
+    flat_list = list(np.array(flat_list))
+    
     return flat_list

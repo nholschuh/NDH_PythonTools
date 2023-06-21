@@ -6,7 +6,7 @@ import matplotlib.path as pltpath
 from scipy.io import loadmat
 import inspect
 
-def is2_fileselect(xbounds, ybounds, fdir='/data/rd08/projects/IS2/ATL06', ant_or_green=0, filetype='ATL06', cycle=6, print_flag=0):
+def is2_fileselect(xbounds, ybounds, fdir='/mnt/data01/Data/IS2/ATL11/', ant_or_green=0, filetype='ATL11', cycle=6, print_flag=0):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     % This function identifies the files and the segids for ICESat-2 data that falls within
@@ -17,9 +17,9 @@ def is2_fileselect(xbounds, ybounds, fdir='/data/rd08/projects/IS2/ATL06', ant_o
     %     xbounds -- two values that define the minimum x and maximum x coord (polar stereographic)
     %     ybounds -- two values that define the minumum y and maximum y coord (polar stereographic)
     %     fdir -- the absolute path to the directory where the ATL06/11 files are stored
-    %     ant_or_green -- Specifices which region range to select from
-    %     filetype -- string, currently only 'ATL06' is implemented
-    %     cycle -- the cycle number for plotting, from 1-6 [default 6]
+    %     ant_or_green -- Specifices which region range to select from [0: Ant, 1:Gre]
+    %     filetype -- string, currently only 'ATL06' and 'ATL11' are implemented
+    %     cycle -- the cycle number for plotting, from 1-6 [default 6], only required for ATL06
     %
     %%%%%%%%%%%%%%%
     % The outputs are:
