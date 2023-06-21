@@ -41,11 +41,6 @@ def flatten_list(list_of_lists,recursive=1):
             else:
                 flat_list.append(sublist)
 
-<<<<<<< HEAD
-    flat_list = list(np.array(flat_list))
-    
-    return flat_list
-=======
         flat_list = list(np.array(flat_list))
         
         ######### Here we test if the lists are truly identical
@@ -63,4 +58,3 @@ def flatten_list(list_of_lists,recursive=1):
         
     
     return flat_list
->>>>>>> 7b10ea1e311406c85920d0fdcab9dfc68c118710
