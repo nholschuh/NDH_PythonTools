@@ -34,7 +34,7 @@ def find_nearest_xy(vector_2_search,value,how_many=1):
 
         comp_vec = vector_2_search[:,0] + vector_2_search[:,1]*np.sqrt(np.array(-1,dtype=complex));
         ss = value.shape;
-        if np.max(ss) > 1 & ss[0] > ss[1]:
+        if np.all([np.min(ss) > 1,ss[0] >= ss[1]]):
             value2 = value.transpose();
         elif ss[0] == 1:
             value2 = value.transpose();
@@ -42,7 +42,7 @@ def find_nearest_xy(vector_2_search,value,how_many=1):
             value2 = value;
 
 
-        value_search = value2[:,0] + value2[:,1]*np.sqrt(np.array(-1,dtype=complex));
+        value_search = value2[0,:] + value2[1,:]*np.sqrt(np.array(-1,dtype=complex));
 
         complex_dists = np.tile(comp_vec,(len(value_search),1)).transpose()-np.tile(value_search,(len(comp_vec),1))
         dists = np.abs(complex_dists);

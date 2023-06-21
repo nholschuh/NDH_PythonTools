@@ -1,5 +1,9 @@
 import numpy as np
 from scipy.interpolate import RegularGridInterpolator
+import matplotlib.pyplot as plt
+
+class CustomError(Exception):
+     pass
 
 def regrid(inx,iny,indata,newx,newy):
     """
@@ -22,6 +26,8 @@ def regrid(inx,iny,indata,newx,newy):
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """
 
+    ############### Here we decide if we need to flip the input data to make axes increasing --
+    ############### (This is important so that we know to re-flip the output before returning)
     dx = inx[1]-inx[0]
     dy = iny[1]-iny[0]
 
@@ -39,12 +45,33 @@ def regrid(inx,iny,indata,newx,newy):
     else:
         flipy_flag = 0
 
+    ############### But we also need to know if we need to flip the comparison grid --
+    ############### (This is only important for the regridding step)        
+    dx2 = newx[1]-newx[0]
+    dy2 = newy[1]-newy[0]
+    if dx2 < 0:
+        newx = newx[::-1]
+    if dy2 < 0:
+        newy = newy[::-1]
+        
+        
     ############## Here is the actual function
-    my_interpolater = RegularGridInterpolator((iny,inx),indata)
+    my_interpolater = RegularGridInterpolator((iny,inx),indata,fill_value=np.NaN,bounds_error=False)
 
     finalx,finaly = np.meshgrid(newx,newy)
 
-    outdata = my_interpolater((finaly,finalx))
+    try:
+        outdata = my_interpolater((finaly,finalx))
+    except:
+        print('Input Grid (must have values for all output grid: [',np.min(inx),np.max(inx),'],[',np.min(iny),np.max(iny),']')
+        print('Output Grid: [',np.min(newx),np.max(newx),'],[',np.min(newy),np.max(newy),']')
+        box1x = [np.min(inx),np.max(inx),np.max(inx),np.min(inx),np.min(inx)]
+        box1y = [np.max(iny),np.max(iny),np.min(iny),np.min(iny),np.max(iny)]
+        box2x = [np.min(newx),np.max(newx),np.max(newx),np.min(newx),np.min(newx)]
+        box2y = [np.max(newy),np.max(newy),np.min(newy),np.min(newy),np.max(newy)]
+        plt.plot(box1x,box1y,'--',c='black',label='Input Grid')
+        plt.plot(box2x,box2y,'-',c='red',label='Output Grid')
+        raise CustomError("You have a bounds error for your grids")
 
     if flipy_flag == 1:
         outdata = np.flipud(outdata)

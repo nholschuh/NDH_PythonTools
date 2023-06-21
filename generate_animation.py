@@ -9,9 +9,9 @@ def generate_animation(fps,title='Matplotlib Animation',comment='Matplotlib Anim
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are as follows:
     %
-    % spacing -- the gap between sequential values
-    % fps -- the offset from 0 to round to
-    %
+    % fps -- The framerate (in frames per second)
+    % title -- This is the title of the video as stored in the file
+    % comment -- This stores some meta-text about your videoo
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The outputs are as follows:
