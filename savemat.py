@@ -1,4 +1,5 @@
 import hdf5storage
+import scipy.io
 
 def savemat(matfiledata,fn):
     """
@@ -14,5 +15,12 @@ def savemat(matfiledata,fn):
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """ 
-    hdf5storage.write(matfiledata, '.', fn, matlab_compatible=True)
+    
+    try:
+        try:
+            hdf5storage.write(matfiledata, '.', fn, matlab_compatible=True)
+        except:
+            scipy.io.savemat(fn,matfiledata)
+    except:
+        print('Something is wrong, and the savemat functions failed.')
     

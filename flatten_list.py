@@ -26,6 +26,7 @@ def flatten_list(list_of_lists,recursive=1):
     
     flat_list = []
     array_flag = 0
+    steps = 0
     recursive_flag = 1
     flat_list_check = list_of_lists.copy()
     
@@ -50,11 +51,18 @@ def flatten_list(list_of_lists,recursive=1):
             recursive_flag = 0
         if recursive == 0:
             recursive_flag = 0
+            
+        ############ nan's present in the ojbect break the list comparison.
+        ############ so we force it to short circuit after 5 steps
+        if steps > 5:
+            recursive_flag = 0
         
         if recursive_flag == 1:
             flat_list_check = flat_list.copy()
             list_of_lists = flat_list.copy()
             flat_list = []
         
+        steps = steps+1
+        #print(steps)
     
     return flat_list
