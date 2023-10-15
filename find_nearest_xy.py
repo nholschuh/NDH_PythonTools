@@ -27,13 +27,28 @@ def find_nearest_xy(vector_2_search,value,how_many=1):
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """
 
+    if isinstance(vector_2_search,list):
+        vector_2_search = np.array(vector_2_search)
+    if isinstance(value,list):
+        value = np.array(value)
+
+        
     sd = vector_2_search.shape
-    
+    if sd[0] == 2:
+        vector_2_search = vector_2_search.transpose();
+    else:
+        vector_2_search = vector_2_search;
+
+    ss = value.shape
+    if len(ss) == 1:
+        value = np.expand_dims(value,axis=0)
+        ss = value.shape    
+
     ## The two column, vector search case
     if len(sd) == 2:
 
         comp_vec = vector_2_search[:,0] + vector_2_search[:,1]*np.sqrt(np.array(-1,dtype=complex));
-        ss = value.shape;
+        ss = value.shape
         if np.all([np.min(ss) > 1,ss[0] >= ss[1]]):
             value2 = value.transpose();
         elif ss[0] == 1:

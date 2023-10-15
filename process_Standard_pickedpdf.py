@@ -9,7 +9,7 @@ for i in ndh_tools_path_opts:
 ################################################################################################
 
 
-def process_pickingpdf(fn,):
+def process_Standard_pickedpdf(fn,):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %

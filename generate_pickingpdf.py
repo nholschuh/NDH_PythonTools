@@ -9,7 +9,7 @@ for i in ndh_tools_path_opts:
 ################################################################################################
 
 
-def generate_pickingpdf(fn,picking_root_dir,frame_spacing=25,surf_dir='CSARP_surf_ndh',crop_type='100'):
+def generate_pickingpdf(fn,picking_root_dir,frame_spacing=25,surf_dir='CSARP_surf_ndh',crop_type='100',clims=[], alternative_data_opt=0):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
@@ -115,60 +115,102 @@ def generate_pickingpdf(fn,picking_root_dir,frame_spacing=25,surf_dir='CSARP_sur
 
         os.system('rm -r '+picking_root_dir+seg)
         
-        
+#################################################################################################################### 
+#################################################################################################################### 
+#################################################################################################################### 
+####################################################################################################################  
+####################################################################################################################        
     #######################################################################################################
     ####################### The alternative is a directory full of standard files
     str_opt, str_ind = ndh.str_compare([fn],'standard')
     if len(str_opt) > 0:    
+        
         file_list = sorted(glob.glob(fn+'/Data_*.mat'))
+        
+        if len(file_list) > 0:
+            ki = [];
+            for ind,i in enumerate(file_list):
+                if i.split('/')[-1][5] != 'i':
+                    ki.append(ind)
+            file_list = ndh.index_list(file_list,ki)
+        else:
+            file_list = sorted(glob.glob(fn+'/*.mat'))
 
-        max_num = int(file_list[-1].split('/')[-1].split('.')[0].split('_')[-1])
-        seg = file_list[-1].split('/')[-2]
-        froot = '_'.join(file_list[-1].split('/')[-1].split('.')[0].split('_')[0:-1])
+            
+        try:
+            max_num = int(file_list[-1].split('/')[-1].split('.')[0].split('_')[-1])
+            seg = file_list[-1].split('/')[-2]
+            froot = '_'.join(file_list[-1].split('/')[-1].split('.')[0].split('_')[0:-1])
+        except:
+            max_num = len(file_list)
+            seg = file_list[-1].split('/')[-2]
+            froot = seg
         num_range = np.arange(1,max_num+1,1)
 
+        
 
         ################ Here we do some directory checking to make sure all folders we need exist
         if not os.path.isdir(picking_root_dir+'To_Pick/'+seg):
             os.makedirs(picking_root_dir+'To_Pick/'+seg)     ### The pdf directory where pickfiles are stored 
 
-        if not os.path.isdir(picking_root_dir+seg):
-            os.makedirs(picking_root_dir+seg)                ### The directory for the segment
-
         fig = plt.figure(figsize=(15,7))
         ax = plt.gca()  
 
         for ind1,file_num in enumerate(num_range):
+            
             fn_frame = '%s/%s_%0.3d.mat' % (fn,froot,file_num)
+            print(fn_frame)
+            if os.path.isfile(fn_frame) == 0:
+                fn_frame = file_list[ind1]
+
             radar_data,depth_data = ndh.radar_load(fn_frame,plot_flag=0,elevation1_or_depth2=0)
 
-            bot_inds = ndh.find_nearest(radar_data['Time'],radar_data['Bottom'])['index'].astype(float)
-            surf_inds = ndh.find_nearest(radar_data['Time'],radar_data['Surface'])['index'].astype(float)        
-            bot_inds[bot_inds == 0] = np.NaN
-            surf_inds[surf_inds == 0] = np.NaN
-            
-            
-            if crop_type == '100':
-                bot_ind = np.nanmax(bot_inds)+100
-                crop_string = 'maxbotplus100'
+            if len(radar_data.keys()) > 0:
+                bot_inds = ndh.find_nearest(radar_data['Time'],radar_data['Bottom'])['index'].astype(float)
+                surf_inds = ndh.find_nearest(radar_data['Time'],radar_data['Surface'])['index'].astype(float)        
+                bot_inds[bot_inds == 0] = np.NaN
+                surf_inds[surf_inds == 0] = np.NaN
+
+
+                if crop_type == '100':
+                    bot_ind = np.nanmax(bot_inds)+100
+                    crop_string = 'maxbotplus100'
+                else:
+                    bot_ind = len(radar_data['Time'])
+                    crop_string = 'nocrop'
+                    
+                ndh.remove_image(ax,1,verbose=0)
+                ndh.remove_line(ax,2,verbose=0)
+
+                if np.isnan(bot_ind) == 1:
+                    plt.plot(0,0)
+                else:
+                    ########### This accomodates files that have more than one data type
+                    if alternative_data_opt == 1:
+                        find_data_opts = ndh.str_compare(radar_data.keys,'Data2')
+                        if len(find_data_opts[0]) > 0:
+                            radar_data['Data'] = radar_data['Data2']
+
+                    if len(clims) > 0:
+                        imdata = plt.imshow(10*np.log10(radar_data['Data'][:int(bot_ind),:]),
+                                            origin='lower',aspect='auto',cmap='gray_r',vmin=clims[0],vmax=clims[1])
+                    else:
+                        imdata = plt.imshow(10*np.log10(radar_data['Data'][:int(bot_ind),:]),
+                                            origin='lower',aspect='auto',cmap='gray_r')                
+
+                    plt.plot(np.arange(0,len(radar_data['distance'])),bot_inds,ls='--',c='green',alpha=0.2)
+                    plt.plot(np.arange(0,len(radar_data['distance'])),surf_inds,ls='--',c='green',alpha=0.2)
+                
             else:
-                bot_ind = len(radar_data['Time'])
-                crop_string = 'nocrop'
+                plt.plot(0,0)
 
-            ndh.remove_image(ax,1,verbose=0)
-            ndh.remove_line(ax,2,verbose=0)
-
-            imdata = plt.imshow(np.log10(radar_data['Data'][:int(bot_ind),:]),
-                                origin='lower',aspect='auto',cmap='gray_r')
-
-            plt.plot(np.arange(0,len(radar_data['distance'])),bot_inds,ls='--',c='green',alpha=0.2)
-            plt.plot(np.arange(0,len(radar_data['distance'])),surf_inds,ls='--',c='green',alpha=0.2)
 
             ax.invert_yaxis()
 
             plt.axis('off')
-            plt.savefig('%s%s/Frame_%0.3d.png' %(picking_root_dir,seg,file_num))
-
+            frame_fn = '%s/To_Pick/%s/Frame_%0.3d.png' %(picking_root_dir,seg,file_num)
+            plt.savefig(frame_fn)
+            print('  --- Completed Image '+str(ind1)+' of '+str(len(num_range)))
 
         print('Completed the image generation')
 
@@ -180,9 +222,14 @@ def generate_pickingpdf(fn,picking_root_dir,frame_spacing=25,surf_dir='CSARP_sur
         pdfend = 'StandardPicks_%s_crop_%s.pdf' %(seg,crop_string)
         pdfname=pdfroot+pdfend
 
-        frames = '%s%s/*.png' % (picking_root_dir,seg)
+        frames = '%s/To_Pick/%s/*.png' % (picking_root_dir,seg)
 
         os.system("convert -adjoin "+frames+" -gravity center -scale '90<x770<' "+pdfname)
         ###########
 
-        os.system('rm -r '+picking_root_dir+seg)
+        if 0:
+            os.system('rm -r '+picking_root_dir+'/To_Pick/'+seg)
+            os.system('rmdir '+picking_root_dir+'/To_Pick/'+seg)
+        else:
+            print('rm -r '+picking_root_dir+'/To_Pick/'+seg)
+            print('rmdir '+picking_root_dir+'/To_Pick/'+seg)           

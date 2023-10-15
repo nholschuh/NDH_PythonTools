@@ -26,7 +26,7 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
     %                             ### ---- minimum contour size (number of points)
     %                             ### ---- the aggregation type (0: average of marker, 1: horizontal bar)
     %                             ### ---- distance threshold for pixel combination or separation
-    %                             ### ---- the distance calculation method (0:true or 1:vertical)
+    %                             ### ---- the distance calculation method (0:true or 1:vertical or 2:overweight horizontal)
     %                       0 defaults to [[0,5,0,5],[2,25,1,10]] which looks for blue points and red lines
     %
     %%%%%%%%%%%%%%%
@@ -71,7 +71,7 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
         im_colors = ['blue','red']
         im_pick_params = [[0,5,0,50,2],[2,25,1,10,1]] 
         ### This defines how the contours are treated. There should be three parameters here:
-                                 ### ---- which bands to look for minima in
+                                 ### ---- which bands to look for minima in (0: red, 1: green, 2:blue)
                                  ### ---- minimum contour size (number of points)
                                  ### ---- the aggregation type (0: average of marker, 1: horizontal bar)
                                  ### ---- distance threshold for pixel combination or separation

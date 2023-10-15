@@ -1,7 +1,7 @@
 import sys
 sys.path.append('/mnt/data01/Code/')
 
-def flatten_list(list_of_lists,recursive=1):
+def flatten_list(list_of_lists,recursive_flag=1,nan_divide=0):
     """
     % (C) Nick Holschuh - Amherst College - 2022 (Nick.Holschuh@gmail.com)
     % This will take a list of lists (or an array of arrays) and flattens
@@ -10,7 +10,7 @@ def flatten_list(list_of_lists,recursive=1):
     % The inputs are as follows:
     %
     % flatten_list -- The list of lists to be flattened
-    % recursive -- This will keep flattening until the list stops changing
+    % recursive_flag -- This will keep flattening until the list stops changing
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The outputs are as follows:
@@ -23,6 +23,14 @@ def flatten_list(list_of_lists,recursive=1):
 
     import numpy as np
     from NDH_Tools import compare_list
+    
+    if nan_divide == 1:
+        new_list_of_lists = []
+        for i in list_of_lists:
+            new_list_of_lists.append(i)
+            new_list_of_lists.append([np.nan])
+        list_of_lists = new_list_of_lists[:-1]
+    
     
     flat_list = []
     array_flag = 0
@@ -49,7 +57,7 @@ def flatten_list(list_of_lists,recursive=1):
 
         if comb_result:
             recursive_flag = 0
-        if recursive == 0:
+        if recursive_flag == 0:
             recursive_flag = 0
             
         ############ nan's present in the ojbect break the list comparison.

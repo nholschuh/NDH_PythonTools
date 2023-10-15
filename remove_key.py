@@ -23,7 +23,7 @@ def remove_key(d,key_to_remove,name0_value1_type2_length3,remove_count=0):
 
     new_dict = {}
     if isinstance(d, dict):
-        for keys in list(d.keys()):
+        for keys in list(d):
             
             ####### The case where we want to filter by name
             if name0_value1_type2_length3 == 0:
@@ -78,4 +78,4 @@ def remove_key(d,key_to_remove,name0_value1_type2_length3,remove_count=0):
                         new_d = d[keys]
                     new_dict[keys] = new_d   
                     
-        return new_dict,remove_count
+        return new_dict, remove_count

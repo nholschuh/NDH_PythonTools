@@ -27,6 +27,11 @@ def find_nearest(vector_2_search,value,how_many=1):
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """
 
+    if isinstance(vector_2_search,list):
+        vector_2_search = np.array(vector_2_search)
+    if isinstance(value,list):
+        value = np.array(value)
+    
     comp_vec = vector_2_search
     
     if isinstance(vector_2_search,type(np.array([]))) == 0:
