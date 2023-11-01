@@ -1,6 +1,6 @@
 
 
-def edgetrim_mask(edge_trim_array, debug_flag=0, start_trim=0, end_trim=0):
+def edgetrim_mask(edge_trim_array, debug_flag=0, start_trim=0, end_trim=0, additional_narrowing=0):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
@@ -23,20 +23,31 @@ def edgetrim_mask(edge_trim_array, debug_flag=0, start_trim=0, end_trim=0):
     from scipy.interpolate import interp1d
     mask = np.zeros(edge_trim_array.shape)
 
+
+    ###################################################################
+    ### Here we identify the non-NAN values in the edge_trim matrix ###
+    ###################################################################
     et_row,et_col = np.where(~np.isnan(edge_trim_array))
     center_split = np.mean(et_row)
     left_ind = np.where(et_row < center_split)
     right_ind = np.where(et_row >= center_split)
 
 
+    ###################################################################
+    ### We interpolate the edge_trim values across all slices      ####
+    ###################################################################
     col_opts = np.arange(0,edge_trim_array.shape[1])
 
-    left_row_interpolator = interp1d(et_col[left_ind],et_row[left_ind],fill_value=np.NaN,bounds_error=0)
-    right_row_interpolator = interp1d(et_col[right_ind],et_row[right_ind],fill_value=np.NaN,bounds_error=0)
+    left_row_interpolator = interp1d(et_col[left_ind],et_row[left_ind]+additional_narrowing,fill_value=np.NaN,bounds_error=0)
+    right_row_interpolator = interp1d(et_col[right_ind],et_row[right_ind]-additional_narrowing,fill_value=np.NaN,bounds_error=0)
 
     left_row = left_row_interpolator(col_opts).astype(int)
     right_row = right_row_interpolator(col_opts).astype(int)
 
+    
+    ###################################################################
+    ### Then we build the mask from the interpolated values        ####
+    ###################################################################
     for i in col_opts:
         mask[left_row[i]:right_row[i]+1,i] = 1
     for i in range(start_trim):

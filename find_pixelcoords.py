@@ -55,8 +55,8 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
         rinds = ndh.minmax(im_frame[0])
     else:
     ########################## This is meant to handle some spillover of lines and points outside the image
-        row_sum = np.sum(np_frame[:,:,3] == 255,axis=1)
-        col_sum = np.sum(np_frame[:,:,3] == 255,axis=0)
+        row_sum = np.sum(np_frame[:,:,2] == 255,axis=1)
+        col_sum = np.sum(np_frame[:,:,2] == 255,axis=0)
         
         rinds = ndh.minmax(np.where(row_sum > np.mean(row_sum)))
         cinds = ndh.minmax(np.where(col_sum > np.mean(col_sum)))
@@ -113,10 +113,11 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
                     pick_temp_temp = []
                     for ind3, cols in enumerate(np.unique(true_x_inds)):
                         true_x_ind = int(cols) 
+                        compare_inds = np.where(true_x_inds == cols)[0]
                         ########## We want to lean toward the top side, so we split the difference between mean and min
                         y_ind = int(np.mean([
-                            np.mean(rind[true_x_inds == cols]),
-                            np.min(rind[true_x_inds == cols])])
+                            np.mean(rind[compare_inds]),
+                            np.min(rind[compare_inds])])
                         )
                         true_y_ind = np.round(yrange[y_ind])                        
                         pick_temp_temp.append([true_x_ind,true_y_ind])
