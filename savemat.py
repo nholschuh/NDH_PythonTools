@@ -32,8 +32,11 @@ def savemat(matfiledata,fn):
     
     rm_keys = []
     for i in list(matfiledata):
-        if isinstance(matfiledata[i],mat73.AttrDict):
-            rm_keys.append(i)
+        try:
+            if isinstance(matfiledata[i],mat73.AttrDict):
+                rm_keys.append(i)
+        except:
+            pass
             
     if len(rm_keys) > 0:
         print('Warning: .mat save functions can''t handle certain object types [mat73.AttrDict].\n')
