@@ -190,14 +190,26 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
         print('Some frames had errors: ',error_frames)
         for ind1, i in enumerate(error_frames):
             print(str(i)+':', error_lengths[ind1])
-            
-            
+
+
+    ######### The application of ground truth can't handle a pick in every column. Here
+    ######### we downselect the GT objects to include only every other value:
+    center_ind = np.where(np.max(np.sum(~np.isnan(surf_data['surf']['y'][3]),1)) == np.sum(~np.isnan(surf_data['surf']['y'][3]),1))[0]
+    rep_spacing = 2;
+    start_rep = np.mod(center_ind,rep_spacing)+1
+    rep_rows = np.arange(start_rep,len(bottom_picks[:,0]),rep_spacing)
+    bottom_picks[rep_rows,:] = np.NaN
+    for ind1 in range(len(debris_picks)):
+        debris_picks[ind1][rep_rows,:] = np.NaN
+
+
     ######### Here we actually save the files
     if not os.path.isdir(data_dir+surf_save+'/'+day_seg):
         os.makedirs(data_dir+surf_save+'/'+day_seg)
     
     if only_edgetrims == 0:
         surf_data['surf']['y'][3] = bottom_picks
+        
     surf_data['surf']['y'][7] = edge_trim
     surf_data['surf']['name'][7] = 'EdgeTrim'
     ndh.savemat(dict(surf_data),data_dir+surf_save+'/'+day_seg+'/'+local_fn+'.mat')    

@@ -1,10 +1,20 @@
 import numpy as np
 import scipy.interpolate as interp
-import sys
-sys.path.append('/mnt/data01/Code/')
-from NDH_Tools import distance_vector
 
-def line_fill(segmat,value,density0_or_distance1):
+################ This is the import statement required to reference scripts within the package
+import os,sys
+ndh_tools_path_opts = [
+    '/mnt/data01/Code/',
+    '/mnt/l/mnt/data01/Code/'
+    '/home/common/HolschuhLab/Code/'
+]
+for i in ndh_tools_path_opts:
+    if os.path.isfile(i): sys.path.append(i)
+        
+import NDH_Tools as ndh
+################################################################################################
+
+def line_fill(segmat,value,density0_or_distance1, start=0, stop=0, keep_vertices=0):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
@@ -71,14 +81,33 @@ def line_fill(segmat,value,density0_or_distance1):
 
     ###################     
     else:
-        dist_vec2 = distance_vector(segmat[:,0],segmat[:,1],1)
+        
+        dist_vec2 = ndh.distance_vector(segmat[:,0],segmat[:,1],1)
         remove_rows = np.where(dist_vec2 == 0)[0]
 
         segmat = np.delete(segmat,remove_rows,0)
-        dist_vec = distance_vector(segmat[:,0],segmat[:,1])
-        new_dist = np.arange(0,np.max(dist_vec),value)
-
+        dist_vec = ndh.distance_vector(segmat[:,0],segmat[:,1])
+        
+        if stop == 0:
+            new_dist = np.arange(start,np.max(dist_vec),value)
+        elif stop > np.max(dist_vec):
+            new_dist = np.arange(start,np.max(dist_vec),value)
+        else:
+            new_dist = np.arange(start,stop,value)
+            
+            
+        ############## This section maintains the vertices in the data
+        if keep_vertices == 1:
+            angle_thresh = 0.1
+            headings = ndh.heading(segmat[:,0],segmat[:,1])
+            headings_change = np.abs(np.diff(headings))
+            keep_inds = np.where(headings_change > angle_thresh)[0]
+            add_dists = dist_vec[keep_inds]
+            new_dist = np.unique(sorted(np.concatenate([np.array([0]),new_dist,add_dists,np.array([np.max(dist_vec)])])))
+            
         linematrix = np.zeros((len(new_dist),len(segmat[0,:])))
+        
+        
         for i in np.arange(len(segmat[0,:])):
             f =  interp.interp1d(dist_vec,segmat[:,i])
             linematrix[:,i] = f(new_dist)

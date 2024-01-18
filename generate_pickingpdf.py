@@ -71,20 +71,21 @@ def generate_pickingpdf(fn,picking_root_dir,frame_spacing=25,surf_dir='CSARP_sur
         fn_list[-3] = surf_dir
         fn2 = '/'.join(fn_list)
         
-        try:
-            surfdata = ndh.loadmat(fn2)
-            surf_dims = surfdata['surf']['y'][1].shape
-            bot_ind = ndh.find_nearest(data['Time'],np.max(surfdata['surf']['y'][1]))
-        except:
-            print(fn2+' could not be found')
-            fn2 = 0
-            bot_ind = {'index':[len(data['Time'])-25]}
+        #try:
+        surfdata = ndh.loadmat(fn2)
+        surf_dims = surfdata['surf']['y'][1].shape
+        bot_ind = ndh.find_nearest(data['Time'],np.array([np.max(surfdata['surf']['y'][1])]))
+        bot_ind['index'] = [np.min([bot_ind['index'][0]+150,len(data['Time'])])]
+        #except:
+        #    print(fn2+' could not be found')
+        #    fn2 = 0
+        #    bot_ind = {'index':[len(data['Time'])]}
 
         #### Now we loop through the frames we want to plot and generate an image for
         frame_print = np.arange(0,len(xy['x']),frame_spacing)
         for ind1,i in enumerate(frame_print):
             ndh.remove_image(ax,1,verbose=0)
-            ax.imshow(np.squeeze(np.log10(data['Tomo']['img'][:bot_ind['index'][0]+25,:,i])),cmap='bone_r')
+            ax.imshow(np.squeeze(np.log10(data['Tomo']['img'][:bot_ind['index'][0],:,i])),cmap='bone_r')
             ax.set_aspect('auto')
             if fn2 != 0:
                 ndh.remove_line(ax,1,verbose=0)
@@ -95,7 +96,7 @@ def generate_pickingpdf(fn,picking_root_dir,frame_spacing=25,surf_dir='CSARP_sur
                 pass
 
             plt.axis('off')
-            plt.savefig('%s%s/%s/Frame_%0.4d_fs_%0.2d_crop_%0.4d.png' %(picking_root_dir,seg,frame,i,frame_spacing,bot_ind['index'][0]+25))
+            plt.savefig('%s%s/%s/Frame_%0.4d_fs_%0.2d_crop_%0.4d.png' %(picking_root_dir,seg,frame,i,frame_spacing,bot_ind['index'][0]))
 
 
         print('Completed the image generation')
@@ -105,7 +106,7 @@ def generate_pickingpdf(fn,picking_root_dir,frame_spacing=25,surf_dir='CSARP_sur
 
         ########## This converts all the images to a single pdf
         pdfroot = picking_root_dir+'To_Pick/'+seg+'/'
-        pdfend = '%s_fs_%0.2d_crop_%0.4d.pdf' %(frame,frame_spacing,bot_ind['index'][0]+25)
+        pdfend = '%s_fs_%0.2d_crop_%0.4d.pdf' %(frame,frame_spacing,bot_ind['index'][0])
         pdfname=pdfroot+pdfend
 
         frames = '%s%s/%s/*.png' % (picking_root_dir,seg,frame)
@@ -145,7 +146,9 @@ def generate_pickingpdf(fn,picking_root_dir,frame_spacing=25,surf_dir='CSARP_sur
             max_num = len(file_list)
             seg = file_list[-1].split('/')[-2]
             froot = seg
+            
         num_range = np.arange(1,max_num+1,1)
+        print('Images from '+str(max_num)+' files')
 
         
 

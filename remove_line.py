@@ -12,7 +12,7 @@ def remove_line(input_axisObject,num=1,verbose=1):
     
     for i in range(num):
         try:
-            input_axisObject.lines.pop(-1)
+            input_axisObject.lines[-1].remove()
         except:
             if verbose == 1:
                 print('Couldn''t remove line')
