@@ -40,6 +40,7 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
     import NDH_Tools as ndh
     import numpy as np
     import cv2
+    import tqdm
 
 
     im_handle = Image.open(im_filename)
@@ -50,7 +51,7 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
     ######################### This method only works if the image is perfectly white outside of the axes
     if 0:
         im_frame = np.where(np_frame[:,:,3] == 255)
-
+    
         cinds = ndh.minmax(im_frame[1])
         rinds = ndh.minmax(im_frame[0])
     else:
@@ -58,8 +59,8 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
         row_sum = np.sum(np_frame[:,:,2] == 255,axis=1)
         col_sum = np.sum(np_frame[:,:,2] == 255,axis=0)
         
-        rinds = ndh.minmax(np.where(row_sum > np.mean(row_sum)))
-        cinds = ndh.minmax(np.where(col_sum > np.mean(col_sum)))
+        rinds = ndh.minmax(np.where(row_sum <= np.percentile(row_sum,80)-1))
+        cinds = ndh.minmax(np.where(col_sum <= np.percentile(col_sum,80)-1))
         
     xrange = np.linspace(0,original_width,cinds[1]-cinds[0])
     yrange = np.linspace(0,original_height,rinds[1]-rinds[0])
@@ -89,6 +90,12 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
         ############ Here, we post-process the picks to deal with gaps / multiple layers, etc.        
         #######################################################################################
         ########### Finally, we loop through the edge_trims and the picks, and pull out just the relevant info
+
+        #print('--- Total number of countoured objects to process: %d' %len(process_contours))
+        mod_step = 10**np.floor(np.log10(len(process_contours)/10));
+
+        
+        #for ind2 in tqdm.tqdm(range(len(process_contours))):
         for ind2 in range(len(process_contours)):
 
             pick_img = np.zeros_like(process_im)
@@ -213,6 +220,7 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
             pick_output.append(pick_temp)
         else:
             pick_output.append(pick_temp)
+
                     
 
     return pick_output
