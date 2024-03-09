@@ -31,6 +31,10 @@ def find_nearest(vector_2_search,value,how_many=1):
         vector_2_search = np.array(vector_2_search)
     if isinstance(value,list):
         value = np.array(value)
+
+    ############### Here, we substitute out NaNs so they are never chosen
+    if np.max(np.isnan(vector_2_search) == 1):
+        vector_2_search[np.isnan(vector_2_search)] = np.inf
     
     comp_vec = vector_2_search
     

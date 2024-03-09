@@ -122,7 +122,9 @@ def process_Standard_pickedpdf(picked_files,orig_radar_dir,layer_save, cresis_fl
         empty_frames = []
         for ind1,frame_fn in enumerate(tqdm(frame_list)):
             ##### Confirm that file is associated with the right frame
-            if '_%0.3d' % (ind1+1) in standard_fns[ind1]:
+            if np.all(['_%0.3d' % (ind1+1) not in standard_fns[ind1],cresis_flag == 1]):
+                error_frames.append(ind1)
+            else:
                 frame_data = ndh.loadmat(standard_fns[ind1])
                 times = frame_data['Time']
                     
@@ -137,73 +139,75 @@ def process_Standard_pickedpdf(picked_files,orig_radar_dir,layer_save, cresis_fl
                     original_height = len(frame_data['Time'])
                     
                 picks = ndh.find_pixelcoords(frame_fn,original_width,original_height,im_pick_params=[[2,25,1,10,1]])  
-            else:
-                error_frames.append(ind1)
+
+                
         
         ##########################################################################################################
         # Part 6 #################################################################################################
         ########## Here we put pixel information in its final objects
     
         
-            if len(picks[0]) > 0:
-    
-                good_frames.append(ind1)
-                surfaces = picks[0]
-                max_surf_depth = []
-                surfaces_time = []
-                for ind2,i in enumerate(surfaces):
-                    surfaces_time.append(times[i[:,1].astype(int)])
-                    max_surf_depth.append(np.max(surfaces_time[-1]))
-                surf_order = np.argsort(max_surf_depth)[::-1]
-                layer_local_fn = standard_fns[ind1].split('/')[-1]
-                
-                ########## Load or construct the object
-                if len(layer_load) == 0:
-                    layer_data = {'picks':[],'Latitude':frame_data['Latitude'],'Longitude':frame_data['Longitude'],
-                                  'Elevation':frame_data['Elevation'],'Surface':frame_data['Surface'],'Bottom':frame_data['Bottom']}
-                elif len(layer_load) > 0:
-                    layer_data = ndh.loadmat(layer_load_fns[ind1])
-                    layer_ids = layer_data['id']
-                    layer_quality = layer_data['quality']
-                    layer_twtt = layer_data['twtt']
-                    layer_type = layer_data['type']
+            if len(picks) > 0:
+                if len(picks[0]) > 0:
+                    good_frames.append(ind1)
+                    surfaces = picks[0]
+                    max_surf_depth = []
+                    surfaces_time = []
+                    for ind2,i in enumerate(surfaces):
+                        surfaces_time.append(times[i[:,1].astype(int)])
+                        max_surf_depth.append(np.max(surfaces_time[-1]))
+                    surf_order = np.argsort(max_surf_depth)[::-1]
+                    layer_local_fn = standard_fns[ind1].split('/')[-1]
                     
-                    basic_infill_object = np.ones(layer_twtt[0].shape)
-                else:
-                    error_frames.append(ind1)
+                    ########## Load or construct the object
+                    if len(layer_load) == 0:
+                        layer_data = {'picks':[],'Latitude':frame_data['Latitude'],'Longitude':frame_data['Longitude'],
+                                      'Elevation':frame_data['Elevation'],'Surface':frame_data['Surface'],'Bottom':frame_data['Bottom']}
+                    elif len(layer_load) > 0:
+                        layer_data = ndh.loadmat(layer_load_fns[ind1])
+                        layer_ids = layer_data['id']
+                        layer_quality = layer_data['quality']
+                        layer_twtt = layer_data['twtt']
+                        layer_type = layer_data['type']
                         
-                ########## Loop through the layers
-                for ind2,i in enumerate(surf_order):
-                    layer_times = frame_data['Time'][np.array(surfaces[i]).astype(int)[:,1]]
-                    ki = np.array(surfaces[i]).astype(int)[:,0]
-                        
-                    if layer_save_type == 0:
-                        ######## For some reason layer files and the image have different sizes.
-                        ######## so we have to interpolate the pick indecies onto the gpstime...
-                        ki_times = np.squeeze(frame_data['GPS_time'][ki])
-                        ki_layer, new_ki = np.unique(ndh.find_nearest(layer_data['gps_time'],np.squeeze(ki_times))['index'],return_index=True)
-    
-                        twtt_temp = basic_infill_object*np.nan
-                        twtt_temp[ki_layer] = ki_times[new_ki]
-    
-                        layer_twtt = np.vstack([layer_twtt,twtt_temp])
-                        layer_ids = np.append(layer_ids,layer_ids[-1]+1)
-                        layer_type = np.vstack([layer_type,basic_infill_object*2])
-                        layer_quality = np.vstack([layer_quality,basic_infill_object])
-    
-                    elif layer_save_type == 1:
-                        twtt_temp = np.ones(layer_data['Latitude'].shape)*np.nan
-                        twtt_temp[ki] = layer_times
-                        layer_data['picks'].append(twtt_temp)
+                        basic_infill_object = np.ones(layer_twtt[0].shape)
+                    else:
+                        error_frames.append(ind1)
                             
-                if layer_save_type == 0:            
-                    layer_data['id'] = layer_ids
-                    layer_data['quality'] = layer_quality
-                    layer_data['twtt'] = layer_twtt
-                    layer_data['type'] = layer_type
-    
-    
-                ndh.savemat(layer_data,layer_fns[ind1])
+                    ########## Loop through the layers
+                    for ind2,i in enumerate(surf_order):
+                        layer_times = frame_data['Time'][np.array(surfaces[i]).astype(int)[:,1]]
+                        ki = np.array(surfaces[i]).astype(int)[:,0]
+                            
+                        if layer_save_type == 0:
+                            ######## For some reason layer files and the image have different sizes.
+                            ######## so we have to interpolate the pick indecies onto the gpstime...
+                            ki_times = np.squeeze(frame_data['GPS_time'][ki])
+                            ki_layer, new_ki = np.unique(ndh.find_nearest(layer_data['gps_time'],np.squeeze(ki_times))['index'],return_index=True)
+        
+                            twtt_temp = basic_infill_object*np.nan
+                            twtt_temp[ki_layer] = ki_times[new_ki]
+        
+                            layer_twtt = np.vstack([layer_twtt,twtt_temp])
+                            layer_ids = np.append(layer_ids,layer_ids[-1]+1)
+                            layer_type = np.vstack([layer_type,basic_infill_object*2])
+                            layer_quality = np.vstack([layer_quality,basic_infill_object])
+        
+                        elif layer_save_type == 1:
+                            twtt_temp = np.ones(layer_data['Latitude'].shape)*np.nan
+                            twtt_temp[ki] = layer_times
+                            layer_data['picks'].append(twtt_temp)
+                                
+                    if layer_save_type == 0:            
+                        layer_data['id'] = layer_ids
+                        layer_data['quality'] = layer_quality
+                        layer_data['twtt'] = layer_twtt
+                        layer_data['type'] = layer_type
+        
+        
+                    ndh.savemat(layer_data,layer_fns[ind1])
+                else:
+                    empty_frames.append(ind1)
     
             else:
                 empty_frames.append(ind1)

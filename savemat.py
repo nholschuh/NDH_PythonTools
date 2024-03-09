@@ -1,6 +1,7 @@
 import hdf5storage
 import scipy.io
 import mat73
+import numpy as np
 import os
 
 ################ This is the import statement required to reference scripts within the package
@@ -13,7 +14,7 @@ for i in ndh_tools_path_opts:
     if os.path.isfile(i): sys.path.append(i)
 #################################################################
 
-def savemat(matfiledata,fn):
+def savemat(matfiledata,fn,debug_flag=0):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
@@ -35,6 +36,8 @@ def savemat(matfiledata,fn):
         try:
             if isinstance(matfiledata[i],mat73.AttrDict):
                 rm_keys.append(i)
+            if isinstance(matfiledata[i],type([])):
+                matfiledata[i] = np.array(matfiledata[i], dtype=numpy.object)
         except:
             pass
             
@@ -52,8 +55,12 @@ def savemat(matfiledata,fn):
             except:
                 pass
             hdf5storage.write(matfiledata, '.', fn, matlab_compatible=True)
+            if debug_flag == 1:
+                print('Written using the hdf5 writer')
         except:
             scipy.io.savemat(fn,matfiledata)
+            if debug_flag == 1:
+                print('Written using the scipy.io package')
     except:
         print('Something is wrong, and the savemat functions failed.')
     

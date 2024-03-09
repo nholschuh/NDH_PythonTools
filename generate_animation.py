@@ -1,4 +1,10 @@
 import matplotlib.animation as manimation
+import os
+
+if os.path.isdir('/home/common/HolschuhLab/Code/'):
+    import matplotlib.pyplot as plt
+    plt.rcParams['animation.ffmpeg_path']='/home/common/HolschuhLab/Code/HolschuhLab_CondaEnv/bin/ffmpeg'
+    
 
 def generate_animation(fps,title='Matplotlib Animation',comment='Matplotlib Animation'):
     """
