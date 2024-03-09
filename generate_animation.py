@@ -43,10 +43,12 @@ def generate_animation(fps,title='Matplotlib Animation',comment='Matplotlib Anim
         metadata = dict(title=title, artist='Matplotlib',
                     comment=comment)
         writer = FFMpegWriter(fps=fps, metadata=metadata)
+        print('Using the FFMpeg writer')
     except:
         PillowWriter = manimation.writers['pillow']
         metadata = dict(title=title, artist='Matplotlib',
                     comment=comment)
         writer = PillowWriter(fps=fps, metadata=metadata)
+        print('Using the Pillow writer')
 
     return writer
