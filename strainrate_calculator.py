@@ -173,4 +173,4 @@ def strainrate_calculator(x_axis,y_axis,u,v,strain_selections=[1,1,1,1,1,0,1],de
     #newx = (x_axis[1:]+x_axis[:-1])/2
     #newy = (y_axis[1:]+y_axis[:-1])/2
     
-    return sr,newx,newy,sr_meta
+    return sr,sr_meta
