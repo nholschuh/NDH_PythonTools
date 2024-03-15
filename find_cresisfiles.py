@@ -58,6 +58,7 @@ def find_cresisfiles(y,m=0,d=0,seg=0,frame=0):
     
     processing_types = sorted(glob.glob(root_dir+season['season']+'/*/'))
     search_types = ['standard','music','surf','DEM']
+
     dir_names = [[],[],[],[]]
     found_files = [[],[],[],[]]
     
@@ -65,7 +66,11 @@ def find_cresisfiles(y,m=0,d=0,seg=0,frame=0):
         type_fdrs,type_fdrs_ind = ndh.str_compare(processing_types,ptype)
     
         for ind1,type_fdr in enumerate(type_fdrs):
-            file_opts = sorted(glob.glob(type_fdr+dayseg_str+'/'+filestr+'.mat'))
+            if ind0 < 3:
+                file_opts = sorted(glob.glob(type_fdr+dayseg_str+'/'+filestr+'.mat'))
+            else:
+                file_opts = sorted(glob.glob(type_fdr+dayseg_str+'/'+'_'.join(filestr.split('_')[1:])+'_bottom.mat'))
+                                   
             for ind2, file_select in enumerate(file_opts):
                 found_files[ind0].append(file_select)
                 temp_dir_name = file_select.split('/')

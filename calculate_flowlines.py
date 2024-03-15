@@ -66,8 +66,8 @@ def calculate_flowlines(input_xr,seed_points,uv_varnames=['u','v'],xy_varnames=[
         xs = temp_xs
         ys = temp_ys
     else:
-        xs = np.empty([2,1])
-        ys = np.empty([2,1])
+        xs = np.empty([0,len(seed_points)])
+        ys = np.empty([0,len(seed_points)])
 
 
     #################### Here is the backward calculation

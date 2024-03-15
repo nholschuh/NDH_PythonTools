@@ -17,20 +17,27 @@ import matplotlib.pyplot as plt
 import NDH_Tools as ndh
 
 
-def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edgetrims=0):
+def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edgetrims=0,remove_framedir=1):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
-    %     This function does the standard load, transformation, and plotting
-    %     that is common in the CReSIS radar analysis workflow
+    %     This function takes a picked PDF for a MUSIC image and digitizes 
+    %     the picked layers and associated edgetrims
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are:
-    %
+    %       fn -- The name of the picked pdf file to process
+    %       data_dir -- The directory that contains the season information for the file
+    %       surf_load -- The name (eg. CSARP_surf_ndh) that loads in the original surface files
+    %       music_load -- The name (eg. CSARP_music3D_ndh) that loads in the original music files
+    %       surf_save --  The name of the directory you want to save the new surf files into (CSARP_surf_iPad)
+    %       only_edgetrims -- [0] In case you only want to extract the edge-trim values    
     %
     %%%%%%%%%%%%%%%
     % The outputs are:
-    %
+    %       This will save a new surf file into the "surf_save" directory. Because of some funny ways
+    %       Python saves .mat files, you need to run a complementary matlab function on your picked files afterward
+    %       "XXXXXXXXXXX"
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """ 
@@ -56,7 +63,7 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
     surf_fn = data_dir+surf_load+'/'+day_seg+'/'+local_fn+'.mat'
     music_fn = data_dir+music_load+'/'+day_seg+'/'+local_fn+'.mat'
     surf_data = ndh.loadmat(surf_fn)
-    times = ndh.loadmat(music_fn,['Time'])['Time']
+    times = ndh.loadmat(music_fn,['Time'])['Time'][0]
     surf_pick = np.ones(surf_data['surf']['y'][3].shape)*np.NaN
 
     ######## These are the properties of the original file that need to be provided to the image processing
@@ -79,7 +86,10 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
     ########## The following converts a pdf to multiple images
     print('Starting the pdf deconstruction for: '+local_fn)
     
-    comb_deconstruct_dir = '/'.join(fn.split('/')[0:-1])
+    comb_deconstruct_dir = '/'.join(fn.split('/')[0:-1])+'/temp_frame_deconstruction/'
+    if os.path.isdir(comb_deconstruct_dir) == 0:
+        os.makedirs(comb_deconstruct_dir)
+    
     os_cmd = 'convert -quality 20 -density 144 %s %s/%s' % (fn,comb_deconstruct_dir,'Frame_%03d.png')
     os.system(os_cmd)
     frame_list = sorted(glob.glob(comb_deconstruct_dir+'/*.png'))
@@ -179,9 +189,10 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
     ##########################################################################################################
     # Part 7 #################################################################################################
     ########## Here we clean up the temporary directory and save the output
-    os_cmd = 'rm -r %s/Frame*' % (comb_deconstruct_dir)
-    print('When ready, run:     '+os_cmd)
-    print(' ')
+    if remove_framedir != 1:
+        os_cmd = 'rm -r %s' % (comb_deconstruct_dir[:-1])
+        print('When ready, run:     '+os_cmd)
+        print(' ')
     
     if len(error_frames) > 0:
         print('To test the pixelcoords function, run:')
