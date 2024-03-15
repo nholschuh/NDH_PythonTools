@@ -169,7 +169,7 @@ def strainrate_calculator(x_axis,y_axis,u,v,strain_selections=[1,1,1,1,1,0,1],de
                'Min Longitudinal Orientation',
                'Rotation Matrix',
                'Vertical Strain Rate']
-    newx = (x[1:]+x[:-1])/2
-    newwy = (x[1:]+x[:-1])/2
+    newx = (x_axis[1:]+x_axis[:-1])/2
+    newwy = (y_axis[1:]+y_axis[:-1])/2
     
     return sr,newx,newy,sr_meta
