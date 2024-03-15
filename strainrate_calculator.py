@@ -1,4 +1,4 @@
-def strainrate_calculator(x_axis,y_axis,u,v,strain_selections,debug_flag=0):
+def strainrate_calculator(x_axis,y_axis,u,v,strain_selections=[1,1,1,1,1,0,1],debug_flag=0):
     '''
     % (C) Nick Holschuh - Penn State University - 2016 (Nick.Holschuh@gmail.com)
     % This calculates the maximum longitudinal strain ("along flow"), the
@@ -169,5 +169,7 @@ def strainrate_calculator(x_axis,y_axis,u,v,strain_selections,debug_flag=0):
                'Min Longitudinal Orientation',
                'Rotation Matrix',
                'Vertical Strain Rate']
+    newx = (x[1:]+x[:-1])/2
+    newwy = (x[1:]+x[:-1])/2
     
-    return sr,sr_meta
+    return sr,newx,newy,sr_meta
