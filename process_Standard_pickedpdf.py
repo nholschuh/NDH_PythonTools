@@ -10,7 +10,7 @@ for i in ndh_tools_path_opts:
 
 
 
-def process_Standard_pickedpdf(picked_files,orig_radar_dir,layer_save, cresis_flag=1, layer_save_type=1, layer_load=''):
+def process_Standard_pickedpdf(picked_files,orig_radar_dir,layer_save, cresis_flag=1, layer_save_type=1, layer_load='', find_rows_from_fullimageset = 0):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
@@ -26,6 +26,9 @@ def process_Standard_pickedpdf(picked_files,orig_radar_dir,layer_save, cresis_fl
     %     layer_save_type=1 - For most applications, this should be set to 1, which is, save files in your current dir. 
     %                     0 - This allows you to save layer files within the cresis file_tree
     %     layer_load='' - This is not fully implemented, but it would allow you to populate existing layer files
+    %     find_rows_from_fullimageset - Setting this to 1 will search all images to figure out which rows
+    %                                   of pixels are within the plot. For use when some of the bottom of radargrams
+    %                                   is all white.
     %
     %%%%%%%%%%%%%%%
     % The outputs are:
@@ -37,6 +40,7 @@ def process_Standard_pickedpdf(picked_files,orig_radar_dir,layer_save, cresis_fl
     import glob
     import os
     import numpy as np
+    import matplotlib.pyplot as plt
     
     from PIL import Image
     import cv2
@@ -100,6 +104,8 @@ def process_Standard_pickedpdf(picked_files,orig_radar_dir,layer_save, cresis_fl
             os.makedirs(comb_deconstruct_dir)
         if not os.path.isdir(save_dir):
             os.makedirs(save_dir)
+
+        
         ##########################################################################################################
         # Part 3 #################################################################################################
         ######## Here we define the objects that need to be populated with picks
@@ -116,6 +122,42 @@ def process_Standard_pickedpdf(picked_files,orig_radar_dir,layer_save, cresis_fl
         ##########################################################################################################
         # Part 5 ##################################################################################################
         print('Starting the information extraction.')
+
+
+        
+        ########## For images that have white at the bottom, we first look through all images to figure out the appropriate 
+        ########## row indecies to use.
+
+        if find_rows_from_fullimageset == 1:
+            for ind1,frame_fn in enumerate(frame_list):
+                im_handle = Image.open(frame_fn)
+                np_frame = np.array(im_handle)
+                np_frame_dims = np_frame.shape
+                
+               #print('Frame number %0.2d' % ind1)
+               #print('np_frame shape: ',np_frame_dims)
+    
+                ########## For PNGs with RGB+components, this works best
+                if np_frame_dims[2] == 4:
+                    if ind1 == 0:
+                        im_frame = np.array(np_frame[:,:,3] != 0).astype(float)
+                    else:
+                        im_frame = im_frame + np.array(np_frame[:,:,3] != 0).astype(float)
+                ########## For greyscale+transparent, this is what you need
+                elif np_frame_dims[2] == 2:
+                    if ind1 == 0:
+                        im_frame = np.array(np_frame[:,:,1] != 0).astype(float)
+                    else:
+                        im_frame = im_frame + np.array(np_frame[:,:,1] != 0).astype(float) 
+                    
+            if 'im_frame' in locals():   
+                #plt.imshow(im_frame)
+                selected_rows = ndh.minmax(np.where(im_frame > 0)[0])
+                #print(selected_rows)
+            else: 
+                find_rows_from_fullimageset = 0
+                print('Something went wrong with the full image-set. Defaulting to local row search.')
+
         ########## Here we actually load the images and extract pixel coordinate information
         error_frames = []
         good_frames = []
@@ -137,8 +179,11 @@ def process_Standard_pickedpdf(picked_files,orig_radar_dir,layer_save, cresis_fl
                     original_height = height_index['index'][0]+100
                 elif crop == 'nocrop':
                     original_height = len(frame_data['Time'])
-                    
-                picks = ndh.find_pixelcoords(frame_fn,original_width,original_height,im_pick_params=[[2,25,1,10,1]])  
+
+                if find_rows_from_fullimageset == 0:
+                    picks = ndh.find_pixelcoords(frame_fn,original_width,original_height,im_pick_params=[[2,25,1,10,1]])  
+                else:
+                    picks = ndh.find_pixelcoords(frame_fn,original_width,original_height,im_pick_params=[[2,25,1,10,1]], predefined_row_inds=selected_rows)
 
                 
         

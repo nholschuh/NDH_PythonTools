@@ -8,7 +8,7 @@ for i in ndh_tools_path_opts:
     if os.path.isfile(i): sys.path.append(i)
 ################################################################################################
 
-def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0):
+def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0,predefined_row_inds=[]):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
@@ -20,7 +20,7 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
     %
     %     im_filename - The filename of the image that you want to extract info from
     %     originial_width - The original matrix width (used to generate the image)
-    %     original__height - The original matrix height (used to generate the image
+    %     original__height - The original matrix height (used to generate the image)
     %     im_pick_params - This defines how the contours are treated. There should be four parameters per image:
     %                             ### ---- which bands to look for minima in (color of lines)
     %                             ### ---- minimum contour size (number of points)
@@ -28,6 +28,8 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
     %                             ### ---- distance threshold for pixel combination or separation
     %                             ### ---- the distance calculation method (0:true or 1:vertical or 2:overweight horizontal)
     %                       0 defaults to [[0,5,0,5],[2,25,1,10]] which looks for blue points and red lines
+    %     predefined_row_inds - Some images have white pixels in the plot. This allows you to predefine
+    %                          which rows should be treated as "within the image"
     %
     %%%%%%%%%%%%%%%
     % The outputs are:
@@ -66,7 +68,11 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
                 
                 rinds = ndh.minmax(np.where(row_sum <= np.percentile(row_sum,80)-1))
                 cinds = ndh.minmax(np.where(col_sum <= np.percentile(col_sum,80)-1))
-                
+
+            ########################## If we want to figure out the number of rows from the full dataset
+            if len(predefined_row_inds) > 0:
+                rinds = predefined_row_inds
+            
             xrange = np.linspace(0,original_width,cinds[1]-cinds[0])
             yrange = np.linspace(0,original_height,rinds[1]-rinds[0])
         
