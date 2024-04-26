@@ -3,14 +3,27 @@ import numpy as np
 
 def add_arrow(lines, position=None, direction='forward', size=15, color='black'):
     """
-    add an arrow to a line.
+    % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
+    %
+    % This function adds an arrow to a line. Adapted from:
+    % https://stackoverflow.com/questions/34017866/arrow-on-a-line-plot
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % The inputs are:
+    %     line:       Line2D object or list of lines
+    %     position:   x-position of the arrow. If None, mean of xdata is taken
+    %     direction:  'left' or 'right'
+    %     size:       size of the arrow in fontsize points
+    %     color:      if None, line color is taken.
+    %
+    %%%%%%%%%%%%%%%
+    % The outputs are:
+    %
+    %      N/A
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    """    
 
-    line:       Line2D object or list of lines
-    position:   x-position of the arrow. If None, mean of xdata is taken
-    direction:  'left' or 'right'
-    size:       size of the arrow in fontsize points
-    color:      if None, line color is taken.
-    """
     if isinstance(lines,type([])) == 0:
         lines = [lines]
 

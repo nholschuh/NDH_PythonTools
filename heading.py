@@ -2,21 +2,20 @@ import numpy as np
 
 def heading(input_x,input_y):
     """
-    % (C) Nick Holschuh - Amherst College - 2022 (Nick.Holschuh@gmail.com)
-    % This function applies a bandpass filter on an input series.
+    % (C) Nick Holschuh - Amherst College - 2024 (Nick.Holschuh@gmail.com)
+    % This function calculates the heading of a line (in radians) relative to 
+    % a horizontal line (or a line pointing in the x direction)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are as follows:
     %
-    % data -- the input array to be filtered
-    % times -- the array defining the axis of variability that describes "data"
-    % lowcut -- the frequency that defines the high-pass transition
-    % highcut -- the frequency that defines the low-pass transition
-    % order -- the order that defines the butterworth filter
+    % input_x -- array of x coordinates for the path of interest
+    % input_y -- array of y coordinates for the path of interest
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The outputs are as follows:
     %
-    % y -- the filtered dataset
+    % out_angles -- heading of the line, in radians. Should be same shape as
+    %               input line.
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """

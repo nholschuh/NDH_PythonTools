@@ -2,7 +2,25 @@ import numpy as np
 
 
 def crossovers(line1,line2):
-
+    """
+    % (C) Nick Holschuh - Amherst College -- 2024 (Nick.Holschuh@gmail.com)
+    % This function takes two lines and calculates any crossover points they may have
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % The inputs are as follows:
+    %
+    % line1 -- this takes an nx2 array with x and y coordinates for the first line
+    % line2 -- this takes an nx2 array with x and y coordinates for the second line
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % The outputs are as follows:
+    %
+    % crossover_dictionary -- the outpuut is a dictionary containing two things:
+    %       1: The indecies in line1 and line 2 that are nearest to the crossover
+    %       2: The position of the true crossover coordinates
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%
+    """
     import numpy.core.umath_tests as ut
     
     x_down = line1[:,0]

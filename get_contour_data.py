@@ -16,15 +16,22 @@ def get_contour_data(contour_object,simplify_flag=0,simplify_threshold=100):
     """
     % (C) Nick Holschuh - Amherst College - 2022 (Nick.Holschuh@gmail.com)
     % 
+    % This function extracts contour lines from a contour object for further plotting
+    %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are as follows:
     %
-    % points_object -- 
+    % contour_object -- This is the output from a plt.contour command from Matplotlib
+    % simplify_flag -- default=0, if set to 1, contour lines with fewer than 
+    %                  "simplify_threshold" nodes will be removed
+    % simplify_threshold -- default=100, see use of simplify flag.
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The outputs are as follows:
     %
-    % outdata -- 
+    % new_clines -- an nx3 array, where the first two columns are x and y coordinates
+    %               for the contour lines, the third column is the contour value. 
+    %               Individual contour lines are spearated by a row of NaNs in the array
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% 

@@ -1,21 +1,22 @@
 import numpy as np
 
-
 def box_from_corners(xs,ys):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
-    % This function prints out the minimum and maximum values of an array
+    % This function takes x and y edge values for a rectangle, and produces a
+    % 5x2 array of corner points that trace out the rectangle (for use in plotting)
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are:
     %
-    %     input_array -- array of data to analyze
+    %     xs - 2 value array contaiining the x edges of the rectangle
+    %     ys - 2 value array contaiining the y edges of the rectangle
     %
     %%%%%%%%%%%%%%%
     % The outputs are:
     %
-    %      output -- the min and max in a 1x2 array
+    %      box -- the 5x2 array containing the corner points for the rectangle
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """ 

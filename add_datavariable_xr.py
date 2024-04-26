@@ -5,16 +5,21 @@ def add_datavariable_xr(xarray_dataset,new_datavariable,varname,coordinate_names
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
-    % This function uses xarray to construct a netcdf
+    % This function takes an existing xarray dataset and adds a new datavariable
+    % to the existing coordinate axes (assumed to be y and x)
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are:
-    %
+    %      xarray_dataset -- the existing xarray dataset to be added to
+    %      new_datavariable -- the array containing the new data to be added
+    %      varname -- the name for the new datavariable
+    %      coordinate_names -- default: ['y','x'], the names and order of 
+    %                          coordinate variables to assign to the dimensions
     %
     %%%%%%%%%%%%%%%
     % The outputs are:
     %
-    %
+    %      The updated xarray dataset
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """    

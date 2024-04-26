@@ -20,17 +20,36 @@ def calculate_flowlines(input_xr,seed_points,uv_varnames=['u','v'],xy_varnames=[
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
-    % This function prints out the minimum and maximum values of an array
+    % This function takes a vector field described in an xarray dataset, an
+    % array of points, and calculates flowlines that pass through the array
+    % points following the vector field.
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are:
     %
-    %     input_xr -- xarray dataarray that has the gradient objects in it
+    %     input_xr -- this must be an xarray dataset with two dataarrays, represting
+    %                 the x components and the y components of a vector field. The data
+    %                 variables and the coordinate variables that describe them can have
+    %                 any name, but the defaults are 'u','v','x','y'.
+    %     seed_points -- this should be an nx2 array containing x/y pairs for seed points
+    %                    used to constrain the calculated flowlines
+    %     uv_varnames -- default=['u','v'], these are the datavariable names for the
+    %                    vector field components.
+    %     xy_varnames -- default=['x','y'], these are the coordinate variable names 
+    %                    describing the columns and rows of the vector field arrays
+    %     steps -- default=20000, this is the number of steps to take away from the seed
+    %               in either the forward or backward direction
+    %     ds -- default=2, this is the step-size to take when propagating the flowline away
+    %           from the seedpoint (in the same units as the coordinate variables
+    %     forward0_both1_backward2 -- default=1, this sets whether or not you want 
+    %                                 the flowlines to extend down-vector, up-vector, or
+    %                                 both from the seed point.
     %
     %%%%%%%%%%%%%%%
     % The outputs are:
     %
-    %      output -- the min and max in a 1x2 array
+    %      output -- a list of nx2 arrays containing the flowlines associated with
+    %                each seed point
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """ 

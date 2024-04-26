@@ -34,7 +34,7 @@ def depth_shift(data,time,surface,elevation,bed=[],disp_flag=0):
     %%
     """
 
-    if np.nanmin(np.mod(surface,1)) == 0:
+    if np.nanmax(np.mod(surface,1)) == 0:
         ind_flag = 1;
     else:
         ind_flag = 0;

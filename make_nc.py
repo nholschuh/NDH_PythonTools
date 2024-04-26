@@ -10,19 +10,20 @@ def make_nc(input_x,input_y,input_vars,input_varnames,num_dims=0,filename='temp.
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are:
     %
-    %     input_x,
-    %    input_y,
-    %    input_vars,
-    %    input_varnames,
-    %    filename='temp.nc',
-    %    description='No description provided',
+    %    input_x - This should be the x coordinate variable array, corresponding to columns
+    %    input_y - This should be the y coordinate variable array, corresponding to roes
+    %    input_vars - This should be a list of datavariable arrays, of shape (leny,lenx)
+    %    input_varnames - This should be a list of variable names to attribute to input_vars
+    %    filename='temp.nc' - This is the name of the netcdf to write
+    %    description='No description provided' - A description to go in netcdf metadata
     %    coord_vars=List of names for x coord and y coord, defaults to ['x','y']
-    %    writefile0_or_dataset1 = 1
+    %    writefile0_or_dataset1_or_both2 = 1 - This determines whether or not it will write
+    %                                          out a netcdf or just make the xarray dataset
     %
     %%%%%%%%%%%%%%%
     % The outputs are:
     %
-    %      output -- the min and max in a 1x2 array
+    %    output -- the xarray dataset, if writefile0_or_dataset1_or_both2 > 0
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """    

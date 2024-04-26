@@ -15,7 +15,8 @@ def polarstereo_fwd(latitude,longitude,ant0_or_gre1=2):
     %
     %     latitude -- Latitude values for coordinate reprojection
     %     longitude -- Longitude values for coordinate reprojection
-    %     ant0_or_gre1 -- an explicit declaration of antarctica or greenland for projection
+    %     ant0_or_gre1 -- an explicit declaration of antarctica or greenland for projection.
+    %                     If set to 2, it will try to determine automatically based on lat
     %
     %%%%%%%%%%%%%%%
     % The outputs are:

@@ -13,11 +13,11 @@ def cresis_season(y,m=0,d=0,ant1_gre2=1):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
-    %     This function finds the season name associated with a flight day
-    % There are a small number of flight days in which both campaigns
+    %     This function finds the season name associated with a flight day.
+    % There are a small number of flight days in which two campaigns
     % were running apparently. By default, this code will assume you want
-    % the Antarctic Season. If you would prefer it prompt you to ask for
-    % a selection, chanage the value to zero.  
+    % the Antarctic Season. You can force it to take the greenland season using
+    % the given flag.
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are:

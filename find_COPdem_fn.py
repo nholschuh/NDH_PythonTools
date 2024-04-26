@@ -7,9 +7,24 @@ sys.path.append('/mnt/data01/Code/')
 
 def find_COPdem_fn(lat,lon):
     """
-    This is a function that outputs the filename associated wtih the desired latitude & longitude 
-    """
-    
+    % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
+    %
+    %     This is a function that outputs the filename associated wtih the 
+    %     desired latitude & longitude of the COPdem
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % The inputs are:
+    %
+    %     lat -- individual latitude value to use for search
+    %     lon -- individual longitude value to use for search
+    %
+    %%%%%%%%%%%%%%%
+    % The outputs are:
+    %
+    %      file_info -- the filename for the COPDem tile that you want
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    """ 
+
     from NDH_Tools import find_nearest_xy
     from NDH_Tools import loadmat
     

@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def lp(input_array):
+def lp(input_array,amp0_or_power1=1):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
@@ -10,7 +10,11 @@ def lp(input_array):
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are:
     %
-    %     input_array -- amplitude data to convert
+    %     input_array -- data to convert
+    %     amp0_or_power1 -- default=1. If the original data are in amplitude,
+    %                       to convert to log power you need to square them.
+    %                       This flag determines whether or not the values
+    %                       are squared
     %
     %%%%%%%%%%%%%%%
     % The outputs are:
@@ -19,7 +23,11 @@ def lp(input_array):
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """ 
-    output = np.log10(input_array**2)
+    if amp0_or_power1 == 0:
+        output = 10*np.log10(input_array**2)
+    elif amp0_or_power1 == 1:
+        output = 10*np.log10(input_array)
+        
     
     return output
     

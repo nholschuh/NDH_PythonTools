@@ -28,7 +28,7 @@ def vector_projection(input_xvec,input_yvec,projectiontarget_xvec,projectiontarg
     proj_dir_x = projectiontarget_xvec/proj_mag
     proj_dir_y = projectiontarget_yvec/proj_mag
 
-    reproj_mag = input_xvec*proj_dir_x+input_yvec*proj_dir_y
+    reproj_mag = np.sqrt((input_xvec*proj_dir_x)**2+(input_yvec*proj_dir_y)**2)
     reproj_x = proj_dir_x*reproj_mag
     reproj_y = proj_dir_y*reproj_mag
 

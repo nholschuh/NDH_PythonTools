@@ -1,6 +1,6 @@
 import numpy as np
 
-def interpNaN(y):
+def interpNaN(y,nan_ends=0):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     % Fills in NaN values using a linear interpolator
@@ -26,6 +26,11 @@ def interpNaN(y):
         
         
     nans = np.isnan(y)
+    notnans = np.where(~np.isnan(y))[0]
     x = lambda z: z.nonzero()[0]
     y[nans] = np.interp(x(nans), x(~nans), y[~nans])
+
+    if nan_ends == 1:
+        y[:notnans[0]] = np.NaN
+        y[notnans[-1]+1:] = np.NaN
     return y

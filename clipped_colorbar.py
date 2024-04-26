@@ -5,9 +5,9 @@ def clipped_colorbar(CS, **kwargs):
     """
     % (C) Nick Holschuh - Amherst College - 2022 (Nick.Holschuh@gmail.com)
     % This function restricts the colorbar to the vmin/vmax values, so that 
-    % there aren't large chunks of the colorbar that are a single value. The
-    % default behavior is make a colorbar that spans the min value to max value,
-    % not the vmin/vmax. 
+    % there aren't large chunks of the colorbar that are a single value. This
+    % oposes Matplotlib's default behavior, which is to make a colorbar that 
+    % spans the min value to max value, not the vmin/vmax. 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are as follows:
     %

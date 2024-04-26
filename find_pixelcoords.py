@@ -12,8 +12,12 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
-    %     This function does the standard load, transformation, and plotting
-    %     that is common in the CReSIS radar analysis workflow
+    %     This function takes an input image file and will search it for patches
+    %     of color with particular qualities. Its default settings are built
+    %     around CReSIS radar layer picking using GoodNotes6 on an iPad, and so
+    %     it is optimized for finding things that should be points and should be lines.
+    %     
+    %     This function is called from process_Music_pickedpf and process_Standard_pickedpdf
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are:

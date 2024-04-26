@@ -11,7 +11,8 @@ def crop_video(invideo,outvideo,margin=0):
     %
     % invideo -- the filename for the video to crop
     % outvideo -- the filename to write the cropped video to
-    % margin=0 -- the number of additional rows/columns to add as buffer
+    % margin=0 -- the number of additional rows/columns to add as buffer.
+    %             higher numbers here increases the addition of white margin
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The outputs are as follows:

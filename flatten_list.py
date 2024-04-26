@@ -5,7 +5,9 @@ def flatten_list(list_of_lists,recursive_flag=1,nan_divide=0):
     """
     % (C) Nick Holschuh - Amherst College - 2022 (Nick.Holschuh@gmail.com)
     % This will take a list of lists (or an array of arrays) and flattens
-    % them to just an array of the items)
+    % them to just an array of the items). There may also be a method on lists
+    % called "flatten" which does this too, but this version handles subordinate
+    % arrays that might also be within the list.
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are as follows:
     %

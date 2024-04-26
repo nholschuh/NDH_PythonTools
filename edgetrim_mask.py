@@ -9,12 +9,19 @@ def edgetrim_mask(edge_trim_array, debug_flag=0, start_trim=0, end_trim=0, addit
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are:
-    %
+    %      edge_trim_array -- this is typically a 64xn array, with values only
+    %                         where edge trim values have been identified.
+    %                         These typically are the 8th entry in the 'y' object 
+    %                         of a CSARP_surf file
+    %      debug_flag=0 -- this will produce a plot at the end showing the edge mask
+    %      start_trim=0 -- this removes additional columns at the front of the mask
+    %      end_trim=0 -- this removes additional columns from the end of the mask
+    %      additional_narrowing=0 -- this takes from both sides relative to the edge trim
     %
     %%%%%%%%%%%%%%%
     % The outputs are:
     %
-    %
+    %      mask -- a 64xn array of zeros and ones defined by the trim values
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % the edge trim array is typically surf_data['surf']['y'][7]
@@ -59,7 +66,7 @@ def edgetrim_mask(edge_trim_array, debug_flag=0, start_trim=0, end_trim=0, addit
     
     
     if debug_flag:
-        import matplotlib.pyplot as pltdd
+        import matplotlib.pyplot as plt
         plt.imshow(mask)
         plt.plot(et_col,et_row,'o',c='red')
         plt.plot(col_opts,left_row,'-',c='black')

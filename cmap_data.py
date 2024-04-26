@@ -1,11 +1,10 @@
 import matplotlib
 
-
 def cmap_data(colormapname):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
-    % This function gets the colormap object for value extraction
+    % This function gets the colormap object from matplotlib for value extraction
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are:

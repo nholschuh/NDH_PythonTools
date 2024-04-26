@@ -15,21 +15,32 @@ import NDH_Tools as ndh
 
 def heading_line(in_x,in_y,distance,turn,heading=np.pi/2):
     """
-    % (C) Nick Holschuh - Amherst College - 2022 (Nick.Holschuh@gmail.com)
-    % This function applies a bandpass filter on an input series.
+    % (C) Nick Holschuh - Amherst College - 2024 (Nick.Holschuh@gmail.com)
+    %
+    % This function creates a line with a defined heading relative to a given 
+    % point or curve. For use, primarily, in designing geophysical surveys
+    % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are as follows:
     %
-    % data -- the input array to be filtered
-    % times -- the array defining the axis of variability that describes "data"
-    % lowcut -- the frequency that defines the high-pass transition
-    % highcut -- the frequency that defines the low-pass transition
-    % order -- the order that defines the butterworth filter
+    % in_x -- This can be one of two options:
+    %         1: a single point, x. In this case, the output line is drawn
+    %            starting at that point, with a line pointing at a "turn" angle relative
+    %            to the direction defined by "heading"
+    %         2: an array of x coordinates along a line. In this case, the output
+    %            lines are defined at a given angle relative to the trajectory of
+    %            the input lines.
+    % in_y -- same as in_x
+    % distance -- how far the new line should extent from the source
+    % turn -- the angle relative to the heading to direct the new line
+    % heading -- only used if a point is supplied for in_x or in_y. See above.
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The outputs are as follows:
     %
-    % y -- the filtered dataset
+    % heading_line_x - x coordinate for the new lines.
+    % heading_line_y - y coordinate for the new lines
+    % heading_out - The direction (angle) of the new lines
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """

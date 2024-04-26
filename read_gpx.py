@@ -7,12 +7,16 @@ def read_gpx(fn):
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are as follows:
     %
-    %    fn -- 
+    %    fn -- This is the filename to read
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The outputs are as follows:
     %
-    %    data_dictionary
+    %    data_dictionary -- This contains the following info from the gpx file
+    %          lat - array of latitude
+    %          lon - array of longitude
+    %          names - array of names for the points in the file
+    %          waypoint_flag - a flag indicating whether this file contained routes or waypoints (I think)
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """

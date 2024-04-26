@@ -9,7 +9,7 @@ for i in ndh_tools_path_opts:
 ################################################################################################
 
 
-def find_cresisfiles(y,m=0,d=0,seg=0,frame=0):
+def find_cresisfiles(y,m=0,d=0,seg=0,frm=0):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
@@ -21,7 +21,8 @@ def find_cresisfiles(y,m=0,d=0,seg=0,frame=0):
     %     y - either the year, or a string for the filename you want the season for
     %     m - the month
     %     d - the day
-    %     ant1_gre2 - force a particular continent for days where there are surveys in both places
+    %     seg - the segment number
+    %     frm - the frame number
     %
     %%%%%%%%%%%%%%%
     % The outputs are:

@@ -4,7 +4,10 @@ def compare_list(list1,list2):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
-    % This function tests the equality of every item in a list
+    % This function compares entire lists, and spits out two comparative statistics:
+    %    1 -- Are all items across both lists both the same shape and same value
+    %    2 -- Are all items across both lists the same value
+    %    3 -- Are all items across both lists the same shape
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are:
@@ -13,9 +16,11 @@ def compare_list(list1,list2):
     %     list2 -- second list to compare
     %
     %%%%%%%%%%%%%%%
-    % The outputs are:
+    % The outputs, following the structure in the headline description:
     %
-    %      true/false
+    %      1: true/false
+    %      2: true/false
+    %      3: true/false
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """ 
