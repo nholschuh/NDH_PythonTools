@@ -72,18 +72,18 @@ def cresis_season(y,m=0,d=0,ant1_gre2=1):
     
     match_ind = np.where(full_dates[:,0] == target_date)[0]
     exact_flag = 1;
-    
+
+    if len(match_ind) == 0:
+        match_ind = ndh.find_nearest(full_dates[:,0],target_date);
+        match_ind = match_ind['index'][0]
+        exact_flag = 0;
+
     if ant1_gre2 == 1:
         if len(match_ind) > 1:
             match_ind = match_ind[0]
     else:
          if len(match_ind) > 1:
-            match_ind = match_ind[1]   
-        
-    if len(match_ind) == 0:
-        match_ind = ndh.find_nearest(full_dates[:,0],target_date);
-        match_ind = match_ind['index'][0]
-        exact_flag = 0;
+            match_ind = match_ind[1]  
     
     ############### You have to subtract one from the match ind to deal with matlabs indexing
     if full_dates[match_ind,2] == 1:

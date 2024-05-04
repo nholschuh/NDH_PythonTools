@@ -19,17 +19,22 @@ def crossovers(line1,line2):
     %       2: The position of the true crossover coordinates
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%
+    %% Adapted from: https://stackoverflow.com/questions/17928452/find-all-intersections-of-xy-data-point-graph-with-numpy
     """
     import numpy.core.umath_tests as ut
-    
-    x_down = line1[:,0]
-    y_down = line1[:,1]
-    x_up = line2[:,0]
-    y_up = line2[:,1]   
-    
-    p = np.column_stack((x_down, y_down))
-    q = np.column_stack((x_up, y_up))
+
+    ############# Pretty sure we don't need this
+    if 0:
+        x_down = line1[:,0]
+        y_down = line1[:,1]
+        x_up = line2[:,0]
+        y_up = line2[:,1]   
+        
+        p = np.column_stack((x_down, y_down))
+        q = np.column_stack((x_up, y_up))
+    else:
+        p = line1
+        q = line2
 
     (p0, p1, q0, q1) = p[:-1], p[1:], q[:-1], q[1:]
     rhs = q0 - p0[:, np.newaxis, :]

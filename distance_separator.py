@@ -29,20 +29,30 @@ def distance_separator(in_x,in_y,distance_sep):
     %%
     """
 
+    if isinstance(in_x,type([])):
+        in_x = np.array(in_x)
+
+    if isinstance(in_y,type([])):
+        in_y = np.array(in_y)
     
     dists = distance_vector(in_x,in_y,1)
     naninds = np.where(dists > distance_sep)[0]+1
+    if np.max(naninds) > len(dists)-1:
+        naninds = naninds[:-1]
     
-    in_x_sep = list_separator(in_x,naninds)
-    in_y_sep = list_separator(in_y,naninds)
+    out_xy = np.ones([len(dists)+len(naninds),2])*np.NaN
     
-    out_x = np.array([])
-    out_y = np.array([])
-    for i in in_x_sep:
-        out_x = np.concatenate([out_x,i,np.atleast_1d(np.NaN)])
-    for i in in_y_sep:
-        out_y = np.concatenate([out_y,i,np.atleast_1d(np.NaN)])
-    
-    return out_x, out_y
+    ind_adjust = np.zeros(len(dists))
+    ind_adjust[naninds] = 1
+    ind_adjust = np.cumsum(ind_adjust)
+
+    orig_ind = np.arange(0,len(in_x))
+    orig_ind = orig_ind+ind_adjust
+    orig_ind = orig_ind.astype(int)
+
+    out_xy[orig_ind,0] = in_x
+    out_xy[orig_ind,1] = in_y
+
+    return out_xy
     
     
