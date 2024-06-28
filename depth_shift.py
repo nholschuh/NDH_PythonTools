@@ -39,6 +39,9 @@ def depth_shift(data,time,surface,elevation,bed=[],disp_flag=0):
     else:
         ind_flag = 0;
 
+    if np.max(surface) == 0:
+        ind_flag = 0
+
 
     ########   Fix the orientation of certain objects
     ss = surface.shape
@@ -64,6 +67,8 @@ def depth_shift(data,time,surface,elevation,bed=[],disp_flag=0):
     cair =  299792458;
     cice = cair/np.sqrt(3.15)
 
+
+    
 
     ## Computes ice thickness if the bed pick is supplied
     if len(bed) > 0:

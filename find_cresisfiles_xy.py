@@ -1,5 +1,5 @@
 
-def find_cresisfiles_xy(ant0_or_gre1,point0_outline1_grid2,location_input,filename_or_aggregateddata=0,remove_totaldata=1,subset_by_outline=1):
+def find_cresisfiles_xy(ant0_or_gre1,point0_outline1_grid2,location_input,filename_or_aggregateddata=0,remove_totaldata=1,subset_by_outline=1,earliest_year=1900):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
@@ -126,8 +126,9 @@ def find_cresisfiles_xy(ant0_or_gre1,point0_outline1_grid2,location_input,filena
         file_ind = file_ind-1
         fci = sectors['filename'][file_ind][0][::-1]
         try:
-            temp_filesearch = ndh.find_cresisfiles(fci[0],fci[1],fci[2],fci[3],fci[4])
-            target_files.append(temp_filesearch['standard'][0])
+            if fci[0] > earliest_year:
+                temp_filesearch = ndh.find_cresisfiles(fci[0],fci[1],fci[2],fci[3],fci[4])
+                target_files.append(temp_filesearch['standard'][0])
         except:
             print('Something seems to be wrong with ',str(file_ind))
             #return {'filenames':[]}

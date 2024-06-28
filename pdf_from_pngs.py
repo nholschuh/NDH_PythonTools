@@ -9,7 +9,7 @@ def pdf_from_pngs(imdir,pdfname):
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are:
     %
-    %     imdir -- x-polarstereographic coordinates
+    %     imdir -- You must provide this with a directory containing pngs
     %     pdfname -- The name of the file to write
     %
     %%%%%%%%%%%%%%%

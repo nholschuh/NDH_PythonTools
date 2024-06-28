@@ -39,6 +39,8 @@ def elevation_shift(data,time,surface,elevation,bed,disp_flag=0):
     else:
         ind_flag = 0;
 
+    if np.max(surface) == 0:
+        ind_flag = 0
 
     ########   Fix the orientation of certain objects
     ss = surface.shape
