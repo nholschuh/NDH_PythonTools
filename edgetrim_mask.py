@@ -36,8 +36,8 @@ def edgetrim_mask(edge_trim_array, debug_flag=0, start_trim=0, end_trim=0, addit
     ###################################################################
     et_row,et_col = np.where(~np.isnan(edge_trim_array))
     center_split = np.mean(et_row)
-    left_ind = np.where(et_row < center_split)
-    right_ind = np.where(et_row >= center_split)
+    left_ind = np.where(et_row < center_split)[0]
+    right_ind = np.where(et_row >= center_split)[0]
 
 
     ###################################################################
@@ -45,22 +45,27 @@ def edgetrim_mask(edge_trim_array, debug_flag=0, start_trim=0, end_trim=0, addit
     ###################################################################
     col_opts = np.arange(0,edge_trim_array.shape[1])
 
-    left_row_interpolator = interp1d(et_col[left_ind],et_row[left_ind]+additional_narrowing,fill_value=np.NaN,bounds_error=0)
-    right_row_interpolator = interp1d(et_col[right_ind],et_row[right_ind]-additional_narrowing,fill_value=np.NaN,bounds_error=0)
 
-    left_row = left_row_interpolator(col_opts).astype(int)
-    right_row = right_row_interpolator(col_opts).astype(int)
-
+    if len(left_ind) == 0:
+        mask[:,:] = 1
+        print('There were no edgetrim picks in this file')
+    else:
+        left_row_interpolator = interp1d(et_col[left_ind],et_row[left_ind]+additional_narrowing,fill_value=np.NaN,bounds_error=0)
+        right_row_interpolator = interp1d(et_col[right_ind],et_row[right_ind]-additional_narrowing,fill_value=np.NaN,bounds_error=0)
     
+        left_row = left_row_interpolator(col_opts).astype(int)
+        right_row = right_row_interpolator(col_opts).astype(int)
+        
     ###################################################################
     ### Then we build the mask from the interpolated values        ####
     ###################################################################
-    for i in col_opts:
-        mask[left_row[i]:right_row[i]+1,i] = 1
-    for i in range(start_trim):
-        mask[:,i] = 0
-    for i in range(end_trim):
-        mask[:,-i] = 0
+        for i in col_opts:
+            mask[left_row[i]:right_row[i]+1,i] = 1
+        for i in range(start_trim):
+            mask[:,i] = 0
+        for i in range(end_trim):
+            mask[:,-i] = 0
+            
 
     mask[mask == 0] = np.NaN
     

@@ -9,11 +9,13 @@ def Image_PowerCorrection(radar_image,flight_elev,depth_axis,attenuation_val,att
     % correction that allows you to interpret relative reflectivity within the ice column
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are as follows:
-    %     radar_image -- 
-    %     flight_elev -- 
-    %     depth_axis -- 
-    %     attenuation_val -- 
-    %     attenuation_type -- 0: 1 wawy attenuation rate, 1: two way attenuation rate, 2: nx2 array with depths and attenuation rate values
+    %     radar_image -- The depth_shifted (not elevation shifted) image
+    %     flight_elev -- The elevation of the plane relative to the ice surface (in m)
+    %     depth_axis -- The z axis associated with the depth_shifted image
+    %     attenuation_val -- Attenuation in db/km
+    %     attenuation_type -- 0: 1 wawy attenuation rate, (multiplied by range)
+    %                         1: two way attenuation rate, (multiplied by depth)
+    %                         2: nx2 array with depths and attenuation rate values
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The outputs are as follows:
@@ -73,4 +75,4 @@ def Image_PowerCorrection(radar_image,flight_elev,depth_axis,attenuation_val,att
 
     power_corrected_radarim = 10*np.log10(radar_image)-spreading_losses+attenuation_losses
 
-    return power_corrected_radarim
+    return {'corrected_im':power_corrected_radarim, 'spreading_correction':spreading_losses, 'attenuation_correction':attenuation_losses}

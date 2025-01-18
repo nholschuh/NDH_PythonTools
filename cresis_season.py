@@ -42,7 +42,7 @@ def cresis_season(y,m=0,d=0,ant1_gre2=1):
     import NDH_Tools as ndh
 
     ########################### Here we find the season metadata. This file was produced
-    ########################### from an external matlab script
+    ########################### from an external matlab script named
     season_metadata_dirs = [
         '/mnt/data01/Data/RadarData/CReSIS_Filestructure/'
     ]

@@ -13,6 +13,22 @@ def show_video(videoname):
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """
+    
+    ################ This is the import statement required to reference scripts within the package
+    import os,sys,glob
+    ndh_tools_path_opts = [
+        '/mnt/data01/Code/',
+        '/home/common/HolschuhLab/Code/'
+    ]
+    for i in ndh_tools_path_opts:
+        if os.path.isdir(i): sys.path.append(i); correction_root_dir=i;
+
+    import NDH_Tools as ndh
+    ################################################################################################
+
+    if videoname[0] == '/':
+        videoname = ndh.absolute_to_relative_path(videoname)
+    
     return HTML("""
     <div align="middle">
     <video width="80%" controls>

@@ -131,7 +131,7 @@ def elevation_shift(data,time,surface,elevation,bed,disp_flag=0):
                 print(str(np.round(10*(i-1)/steps)+'% Complete - Surface Shift'))
 
 
-    top = np.max(surface_elev) + 100
+    top = np.max(surface_elev) + 20
 
 
     surface_elev = interpNaN(surface_elev);
@@ -148,7 +148,7 @@ def elevation_shift(data,time,surface,elevation,bed,disp_flag=0):
 
     shift_amount = shift_amount1-shift_amount2
     new_data = new_data2
-    depth_axis = top-np.arange(0,dx*(len(time)),dx)
+    depth_axis = top-np.arange(0,len(time))*dx
 
     ## This computes the bed elevation if it is supplied
     if 'bed' in locals():

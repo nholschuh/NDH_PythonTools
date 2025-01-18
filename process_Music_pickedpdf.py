@@ -15,9 +15,10 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import NDH_Tools as ndh
+import subprocess
 
 
-def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edgetrims=0,remove_framedir=1):
+def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edgetrims=0,remove_framedir=1,blank_angles=[],gt_spacing=2,keep_initial_bot=1):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
@@ -32,6 +33,8 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
     %       music_load -- The name (eg. CSARP_music3D_ndh) that loads in the original music files
     %       surf_save --  The name of the directory you want to save the new surf files into (CSARP_surf_iPad)
     %       only_edgetrims -- [0] In case you only want to extract the edge-trim values    
+    %       gt_spacing -- [2] How to space the ground truths from a continuous line
+    %       keep_initial_bot -- [1] whether or not to include the initial bottom values
     %
     %%%%%%%%%%%%%%%
     % The outputs are:
@@ -63,6 +66,7 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
     surf_fn = data_dir+surf_load+'/'+day_seg+'/'+local_fn+'.mat'
     music_fn = data_dir+music_load+'/'+day_seg+'/'+local_fn+'.mat'
     surf_data = ndh.loadmat(surf_fn)
+    print(music_fn)
     times = ndh.loadmat(music_fn,['Time'])['Time'][0]
     surf_pick = np.ones(surf_data['surf']['y'][3].shape)*np.NaN
 
@@ -73,8 +77,13 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
     ##########################################################################################################
     # Part 3 #################################################################################################
     ######## Here we define the objects that need to be populated with picks
-    bottom_picks = surf_data['surf']['y'][3]
+    if keep_initial_bot == 1:
+        bottom_picks = surf_data['surf']['y'][3]
+    else:
+        bottom_picks = np.ones(surf_data['surf']['y'][3].shape)*np.NaN
+        
     edge_trim = np.ones(surf_data['surf']['y'][3].shape)*np.NaN
+    angle_len = len(edge_trim[:,0])
     debris_edge = []
     debris_picks = []
     for i in range(4):
@@ -89,9 +98,17 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
     comb_deconstruct_dir = '/'.join(fn.split('/')[0:-1])+'/temp_frame_deconstruction/'
     if os.path.isdir(comb_deconstruct_dir) == 0:
         os.makedirs(comb_deconstruct_dir)
-    
-    os_cmd = 'convert -quality 20 -density 144 %s %s/%s' % (fn,comb_deconstruct_dir,'Frame_%03d.png')
-    os.system(os_cmd)
+
+    result = subprocess.run(['pdfinfo',fn], capture_output=True, text=True)
+    output = result.stdout  # Standard output
+    pages = float(output.split('\n')[8].split()[1])
+    page_loops = np.ceil(pages/50)*50+1
+    page_breaks = np.arange(0,page_loops,50)
+
+    for ind1,start_break in enumerate(page_breaks[:-1]):
+        break_string = '[%i-%i]' % (page_breaks[ind1],page_breaks[ind1+1])
+        os_cmd = 'convert -quality 20 -limit memory 2GiB -limit map 4GiB -density 144 %s%s %s/%s' % (fn,break_string,comb_deconstruct_dir,'Frame_%03d.png')
+        os.system(os_cmd)
     frame_list = sorted(glob.glob(comb_deconstruct_dir+'/*.png'))
 
     ##########################################################################################################
@@ -103,7 +120,7 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
     error_data = []
     error_ims = []
     error_fns = []
-    
+
     for ind1,frame_fn in enumerate(tqdm(frame_list)):
         ################## Here is where the actual pixel information gets extracted
     
@@ -169,11 +186,11 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
             for ind2,i in enumerate(left_order):
                 if ind2 == 0:
                     edge_trim[int(left_edge[i]),ind1*fs] = left_time[i] 
-                    edge_trim[int(right_edge[i]),ind1*fs] = right_time[i] 
+                    edge_trim[int(np.min([right_edge[i],angle_len-1])),ind1*fs] = right_time[i] 
                 else:
                     if only_edgetrims == 0:
                         debris_edge[ind2-1][int(left_edge[i]),ind1*fs] = left_time[i] 
-                        debris_edge[ind2-1][int(right_edge[i]),ind1*fs] = right_time[i] 
+                        debris_edge[ind2-1][int(np.min([right_edge[i],angle_len-1])),ind1*fs] = right_time[i] 
     
             ############ Here the surfs get populated (or ignored, if desired)
             if only_edgetrims == 0:
@@ -186,13 +203,18 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
                         
             os_cmd = 'rm %s' % (frame_fn)
             os.system(os_cmd)
+
+    
     ##########################################################################################################
     # Part 7 #################################################################################################
     ########## Here we clean up the temporary directory and save the output
-    if remove_framedir != 1:
-        os_cmd = 'rm -r %s' % (comb_deconstruct_dir[:-1])
+    if remove_framedir == 1:
+        os_cmd = 'rm -rf %s' % (comb_deconstruct_dir[:-1])
         print('When ready, run:     '+os_cmd)
         print(' ')
+        
+    if remove_framedir == 2:
+        os.system('rm -rf %s' % (comb_deconstruct_dir[:-1]))
     
     if len(error_frames) > 0:
         print('To test the pixelcoords function, run:')
@@ -205,13 +227,18 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
 
     ######### The application of ground truth can't handle a pick in every column. Here
     ######### we downselect the GT objects to include only every other value:
-    center_ind = np.where(np.max(np.sum(~np.isnan(surf_data['surf']['y'][3]),1)) == np.sum(~np.isnan(surf_data['surf']['y'][3]),1))[0]
-    rep_spacing = 2;
-    start_rep = np.mod(center_ind,rep_spacing)+1
-    rep_rows = np.arange(start_rep,len(bottom_picks[:,0]),rep_spacing)
-    bottom_picks[rep_rows,:] = np.NaN
-    for ind1 in range(len(debris_picks)):
-        debris_picks[ind1][rep_rows,:] = np.NaN
+    
+    center_ind = int(np.median(np.where(np.max(np.sum(~np.isnan(surf_data['surf']['y'][3]),1)) == np.sum(~np.isnan(surf_data['surf']['y'][3]),1))[0]))
+    start_rep = np.mod(center_ind,gt_spacing)+1
+
+    for ind1 in range(gt_spacing-1):
+        rep_rows = np.arange(start_rep+ind1,len(bottom_picks[:,0]),gt_spacing)
+        bottom_picks[rep_rows,:] = np.NaN
+        for ind2 in range(len(debris_picks)):
+            debris_picks[ind2][rep_rows,:] = np.NaN
+
+    for ind1 in blank_angles:
+        bottom_picks[ind1,:] = np.NaN
 
 
     ######### Here we actually save the files

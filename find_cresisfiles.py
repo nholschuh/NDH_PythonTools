@@ -9,7 +9,7 @@ for i in ndh_tools_path_opts:
 ################################################################################################
 
 
-def find_cresisfiles(y,m=0,d=0,seg=0,frm=0):
+def find_cresisfiles(y,m=0,d=0,seg=0,frm=0,plus_or_minus_frames=0):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
@@ -52,16 +52,18 @@ def find_cresisfiles(y,m=0,d=0,seg=0,frm=0):
             m = int(y[4:6])
             d = int(y[6:8])    
             y = int(y[0:4])
+
+    frm = frm+plus_or_minus_frames
                 
     season = ndh.cresis_season(y,m,d)
     dayseg_str = '%0.4d%0.2d%0.2d_%0.2d' % (y,m,d,seg)
     filestr = 'Data_%s_%0.3d' % (dayseg_str,frm)
     
     processing_types = sorted(glob.glob(root_dir+season['season']+'/*/'))
-    search_types = ['standard','music','surf','DEM']
+    search_types = ['qlook','standard','music','surf','DEM']
 
-    dir_names = [[],[],[],[]]
-    found_files = [[],[],[],[]]
+    dir_names = [[],[],[],[],[]]
+    found_files = [[],[],[],[],[]]
     
     for ind0,ptype in enumerate(search_types):
         type_fdrs,type_fdrs_ind = ndh.str_compare(processing_types,ptype)
@@ -79,9 +81,10 @@ def find_cresisfiles(y,m=0,d=0,seg=0,frm=0):
     
             #found_files[ind0] = ndh.flatten_list(found_files[ind0]);
     
-    found_files = {'standard':found_files[0],'standard_dirs':dir_names[0],
-                   'music':found_files[1],'music_dirs':dir_names[1],
-                   'surf':found_files[2],'surf_dirs':dir_names[2],
-                   'DEM':found_files[3],'DEM_dirs':dir_names[3]}
+    found_files = {'qlook':found_files[0],'qlook_dirs':dir_names[0],
+                   'standard':found_files[1],'standard_dirs':dir_names[1],
+                   'music':found_files[2],'music_dirs':dir_names[2],
+                   'surf':found_files[3],'surf_dirs':dir_names[3],
+                   'DEM':found_files[4],'DEM_dirs':dir_names[4]}
     
     return found_files

@@ -97,8 +97,12 @@ def depth_shift(data,time,surface,elevation,bed=[],disp_flag=0):
     multiple_thickness = (multiple_time-surf_time)*cice/2    
         
     ## Here we produce the new objects
-    new_data1 = np.zeros(data.shape)
-    new_data2 = np.zeros(data.shape)
+    if np.any(np.iscomplex(data)):
+        new_data1 = np.zeros(data.shape, dtype=complex)
+        new_data2 = np.zeros(data.shape, dtype=complex)
+    else:
+        new_data1 = np.zeros(data.shape)
+        new_data2 = np.zeros(data.shape)       
 
     dt = np.median(np.diff(time))
     dx = cice*dt/2
@@ -134,13 +138,13 @@ def depth_shift(data,time,surface,elevation,bed=[],disp_flag=0):
                 print(str(np.round(10*(i-1)/steps)+'% Complete - Surface Shift'))
 
 
-    top = np.max(surface_elev) + 100
+    top = np.max(surface_elev) + 20
 
 
     surface_elev = interpNaN(surface_elev);
 
     shift_amount = shift_amount1
-    depth_axis = np.arange(0,dx*(len(time)),dx)
+    depth_axis = np.arange(0,len(time))*dx
 
     ## This computes the bed elevation if it is supplied
     if len(bed) > 0:

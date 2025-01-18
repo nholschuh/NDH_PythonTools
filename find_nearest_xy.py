@@ -19,8 +19,7 @@ def find_nearest_xy(vector_2_search,value,how_many=1):
     % value = The values you want to find within "vector_2_search". This must be
     %         an nx2 array, where columns are x and y coordinates
     % how_many = The function will find the x nearest values to "value", where
-    %            x is an integer defined by "how_many". This is only implemented
-    %            for the case where an n x m x 2 vector_2_search is supplied
+    %            x is an integer defined by "how_many". 
     %
     %
     %%%%%%%%%%%%%%%
@@ -74,11 +73,25 @@ def find_nearest_xy(vector_2_search,value,how_many=1):
 
         ## Most efficient method for looking for an individual
         ## value
-        minval = np.min(dists,0)
-        ind = np.argmin(dists,0)
-        index = ind.transpose();
-        distance = minval.transpose();
-        result = vector_2_search[index,:];              
+
+        if how_many == 1:
+            minval = np.min(dists,0)
+            ind = np.argmin(dists,0)
+            index = ind.transpose()
+            distance = minval.transpose();
+            result = vector_2_search[index,:];    
+        else:
+            rankings = np.argsort(dists,0)
+            ind = rankings[0:how_many,:]
+            index = ind.transpose()
+            cols = np.arange(len(value[:,0]))
+            distance = np.zeros(index.shape)
+            result = np.zeros(np.append(index.shape,how_many))
+            for ind2 in np.arange(how_many):
+                rows = index[:,ind2]            
+                distance[:,ind2] = dists[rows,cols]
+                result[:,:,ind2] = vector_2_search[rows,:]
+            
 
 
     #### The m x n x 2, matrix search case
@@ -104,4 +117,5 @@ def find_nearest_xy(vector_2_search,value,how_many=1):
 
                 if counter > how_many:
                     break
+                    
     return {'index':index, 'distance':distance, 'result':result}

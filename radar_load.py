@@ -126,61 +126,135 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0):
         else:
             depth_data = ndh.depth_shift(radar_data['Data'],radar_data['Time'],radar_data['Surface'],radar_data['Elevation'],radar_data['Bottom'])
             
-
+    ##############################################################################################################
     ############# Here we either plot the data or deliver a plot string for future use
+    ##############################################################################################################
     if plot_flag == 1:
 
-        if elevation1_or_depth2 == 0:
-            bot_inds = ndh.find_nearest(radar_data['Time'],radar_data['Bottom'])
-            bot_ind = np.nanmax(bot_inds['index'])+100
-
-            fig = plt.figure(figsize=(15,7))
-            imdata = plt.imshow(10*np.log10(radar_data['Data'][:bot_ind,:]),
-                                origin='lower',aspect='auto',cmap='gray_r')
-            ax = plt.gca()        
-            ax.invert_yaxis()
+        ############## Here, we accomodate complex valued data:
+        if np.any(np.iscomplex(radar_data['Data'])):
+            if elevation1_or_depth2 == -1:
+                fig = plt.figure(figsize=(15,7))
+                imdata = plt.imshow(10*np.log10(np.real(radar_data['Data'])**2),
+                                    origin='lower',aspect='auto',cmap='gray_r')
+                ax = plt.gca()        
+                ax.invert_yaxis()
+    
+            elif elevation1_or_depth2 == 0:
+                fig = plt.figure(figsize=(15,7))
+                imdata = plt.imshow(10*np.log10(np.real(radar_data['Data'])**2),
+                                    extent=[radar_data['distance'][0]/1000,radar_data['distance'][-1]/1000,
+                                            radar_data['Time'][0],radar_data['Time'][-1]],
+                                    origin='lower',aspect='auto',cmap='gray_r')
+                ax = plt.gca()        
+                ax.invert_yaxis()
+    
+            else:
+                fig = plt.figure(figsize=(15,7))
+                imdata = plt.imshow(10*np.log10(np.real(depth_data['new_data'])**2),
+                                    extent=[radar_data['distance'][0]/1000,radar_data['distance'][-1]/1000,
+                                            depth_data['depth_axis'][0],depth_data['depth_axis'][-1]],
+                                    origin='lower',aspect='auto',cmap='gray_r')
 
         else:
-            fig = plt.figure(figsize=(15,7))
-            imdata = plt.imshow(10*np.log10(depth_data['new_data']),
-                                extent=[radar_data['distance'][0]/1000,radar_data['distance'][-1]/1000,
-                                        depth_data['depth_axis'][0],depth_data['depth_axis'][-1]],
-                                origin='lower',aspect='auto',cmap='gray_r')
-            
-            if elevation1_or_depth2 == 2:
-                plt.ylabel('Depth (m)')
-            elif elevation1_or_depth2 == 1:
-                plt.ylabel('Elevation w.r.t WGS84 (m)')
-            plt.xlabel('Distance (km)')
-            
-            cbar = plt.colorbar(imdata)
-            ax = plt.gca()
-            ax.invert_yaxis()
+            if elevation1_or_depth2 == -1:
+                fig = plt.figure(figsize=(15,7))
+                imdata = plt.imshow(10*np.log10(radar_data['Data']),
+                                    origin='lower',aspect='auto',cmap='gray_r')
+                ax = plt.gca()        
+                ax.invert_yaxis()
+    
+            elif elevation1_or_depth2 == 0:
+                fig = plt.figure(figsize=(15,7))
+                imdata = plt.imshow(10*np.log10(radar_data['Data']),
+                                    extent=[radar_data['distance'][0]/1000,radar_data['distance'][-1]/1000,
+                                            radar_data['Time'][0],radar_data['Time'][-1]],
+                                    origin='lower',aspect='auto',cmap='gray_r')
+                ax = plt.gca()        
+                ax.invert_yaxis()
+    
+            else:
+                fig = plt.figure(figsize=(15,7))
+                imdata = plt.imshow(10*np.log10(depth_data['new_data']),
+                                    extent=[radar_data['distance'][0]/1000,radar_data['distance'][-1]/1000,
+                                            depth_data['depth_axis'][0],depth_data['depth_axis'][-1]],
+                                    origin='lower',aspect='auto',cmap='gray_r')
+                
+        if elevation1_or_depth2 == 2:
+            plt.ylabel('Depth (m)')
+        elif elevation1_or_depth2 == 1:
+            plt.ylabel('Elevation w.r.t WGS84 (m)')
+                    
+        plt.xlabel('Distance (km)')
+        
+        cbar = plt.colorbar(imdata)
+        ax = plt.gca()
+        ax.invert_yaxis()
 
     ############## This delivers the plot string of interest
     elif plot_flag == 2:
 
-        if elevation1_or_depth2 == 0:
-            print('''
-fig = plt.figure(figsize=(15,7))
-imdata = plt.imshow(10*np.log10(radar_data['Data']),
-                    origin='lower',aspect='auto',cmap='gray_r')
-                    
-cbar = plt.colorbar(imdata)
-ax = plt.gca() 
-ax.invert_yaxis()
-            ''')            
+        ############## Here, we accomodate complex valued data:
+        if np.any(np.iscomplex(radar_data['Data'])):
+            if elevation1_or_depth2 == -1:
+                print('''
+    fig = plt.figure(figsize=(15,7))
+    imdata = plt.imshow(10*np.log10(np.real(radar_data['Data'])**2),
+                        origin='lower',aspect='auto',cmap='gray_r')
+                ''')  
+            elif elevation1_or_depth2 == 0:
+                print('''
+    fig = plt.figure(figsize=(15,7))
+    imdata = plt.imshow(10*np.log10(np.real(radar_data['Data'])**2),
+                        extent=[radar_data['distance'][0]/1000,radar_data['distance'][-1]/1000,
+                                radar_data['Time'][0],radar_data['Time'][-1]],
+                        origin='lower',aspect='auto',cmap='gray_r')
+                ''')            
+            else:
+                print('''
+    fig = plt.figure(figsize=(15,7))
+    imdata = plt.imshow(10*np.log10(np.real(depth_data['new_data'])**2),
+                        extent=[radar_data['distance'][0]/1000,radar_data['distance'][-1]/1000,
+                                depth_data['depth_axis'][0],depth_data['depth_axis'][-1]],
+                        origin='lower',aspect='auto',cmap='gray_r')    
+                ''')
         else:
-            print('''
-fig = plt.figure(figsize=(15,7))
-imdata = plt.imshow(10*np.log10(depth_data['new_data']),
-                    extent=[radar_data['distance'][0]/1000,radar_data['distance'][-1]/1000,
-                            depth_data['depth_axis'][0],depth_data['depth_axis'][-1]],
-                    origin='lower',aspect='auto',cmap='gray_r')    
-                    
-cbar = plt.colorbar(imdata)
-ax = plt.gca()
-ax.invert_yaxis()
-            ''')
+            if elevation1_or_depth2 == -1:
+                print('''
+    fig = plt.figure(figsize=(15,7))
+    imdata = plt.imshow(10*np.log10(radar_data['Data']),
+                        origin='lower',aspect='auto',cmap='gray_r')
+                ''')  
+            elif elevation1_or_depth2 == 0:
+                print('''
+    fig = plt.figure(figsize=(15,7))
+    imdata = plt.imshow(10*np.log10(radar_data['Data']),
+                        extent=[radar_data['distance'][0]/1000,radar_data['distance'][-1]/1000,
+                                radar_data['Time'][0],radar_data['Time'][-1]],
+                        origin='lower',aspect='auto',cmap='gray_r')
+                ''')            
+            else:
+                print('''
+    fig = plt.figure(figsize=(15,7))
+    imdata = plt.imshow(10*np.log10(depth_data['new_data']),
+                        extent=[radar_data['distance'][0]/1000,radar_data['distance'][-1]/1000,
+                                depth_data['depth_axis'][0],depth_data['depth_axis'][-1]],
+                        origin='lower',aspect='auto',cmap='gray_r')    
+                ''')
 
+        print('''               
+    cbar = plt.colorbar(imdata)
+    ax = plt.gca()
+    ax.invert_yaxis()
+    plt.xlabel('Distance (km)')
+    ''')
+        
+        if elevation1_or_depth2 == 2:
+            print('''
+    plt.ylabel('Depth (m)')''')
+        elif elevation1_or_depth2 == 1:
+            print('''
+    plt.ylabel('Elevation w.r.t WGS84 (m)')''')
+
+                
     return radar_data,depth_data

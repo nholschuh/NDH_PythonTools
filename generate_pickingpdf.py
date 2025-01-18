@@ -67,6 +67,9 @@ def generate_pickingpdf(fn,picking_root_dir,frame_spacing=25,surf_dir='CSARP_sur
     #######################################################################################################
     ####################### We need to determine if this is a 2D file or a MUSIC File
     str_opt, str_ind = ndh.str_compare([fn],'music')
+
+    #######################################################################################################
+    ######### For MUSIC files
     if len(str_opt) > 0:
         
         seg = fn.split('/')[-2]
@@ -104,6 +107,11 @@ def generate_pickingpdf(fn,picking_root_dir,frame_spacing=25,surf_dir='CSARP_sur
         surf_dims = surfdata['surf']['y'][1].shape
         bot_ind = ndh.find_nearest(data['Time'],np.array([np.max(surfdata['surf']['y'][1])]))
         bot_ind['index'] = [np.min([bot_ind['index'][0]+100,len(data['Time'])])]
+
+        #### Accounts for reduced size images for massive music files
+        if data['Tomo']['img'].dtype == 'uint8':
+            bot_ind['index'] = np.array([len(data['Tomo']['img'][:,0,0])]).astype(int)
+            data['Time'] = data['Time'][::2]
         #except:
         #    print(fn2+' could not be found')
         #    fn2 = 0
@@ -113,7 +121,13 @@ def generate_pickingpdf(fn,picking_root_dir,frame_spacing=25,surf_dir='CSARP_sur
         frame_print = np.arange(0,len(xy['x']),frame_spacing)
         for ind1,i in enumerate(frame_print):
             ndh.remove_image(ax,1,verbose=0)
-            ax.imshow(np.squeeze(np.log10(data['Tomo']['img'][:bot_ind['index'][0],:,i])),cmap='bone_r')
+
+            ####### Accounting for int images (for massive swath files)
+            if data['Tomo']['img'].dtype == 'uint8':
+                ax.imshow(np.squeeze(data['Tomo']['img'][:bot_ind['index'][0],:,i]),cmap='bone_r')
+            else:
+                ax.imshow(np.squeeze(np.log10(data['Tomo']['img'][:bot_ind['index'][0],:,i])),cmap='bone_r')
+                
             ax.set_aspect('auto')
             if fn2 != 0:
                 ndh.remove_line(ax,1,verbose=0)
@@ -203,7 +217,7 @@ def generate_pickingpdf(fn,picking_root_dir,frame_spacing=25,surf_dir='CSARP_sur
                 surf_inds[surf_inds == 0] = np.NaN
 
 
-                if crop_type == '100':
+                if crop_type == '100' and np.min(np.isnan(bot_inds)) == 0:
                     bot_ind = np.nanmax(bot_inds)+100
                     crop_string = 'maxbotplus100'
                 else:

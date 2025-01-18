@@ -98,10 +98,10 @@ def find_cresisfiles_xy(ant0_or_gre1,point0_outline1_grid2,location_input,filena
         chosen_sectors = np.array(chosen_sectors.flatten())
 
     elif point0_outline1_grid2 == 1:
-        ol = location_input
-        sector_list = sector_list.flatten()
+        ol = location_input[:,::-1] ###### For some reason x and y need to be flipped? Temporary bandaid until I diagnose why...
         found_sectors = ndh.within(xy,ol)
-        chosen_sectors = np.array(sector_list[found_sectors])
+        sector_ind_list = sector_inds.flatten()
+        chosen_sectors = np.array(sector_ind_list[found_sectors])
 
     elif point0_outline1_grid2 == 2:
         if 0:
@@ -130,7 +130,9 @@ def find_cresisfiles_xy(ant0_or_gre1,point0_outline1_grid2,location_input,filena
                 temp_filesearch = ndh.find_cresisfiles(fci[0],fci[1],fci[2],fci[3],fci[4])
                 target_files.append(temp_filesearch['standard'][0])
         except:
-            print('Something seems to be wrong with ',str(file_ind))
+            pass
+            ########################### I need to figure out why some sectors are failing. Worth a double check later...
+            #print('Something seems to be wrong with ',str(file_ind))
             #return {'filenames':[]}
 
     target_files = np.unique(target_files)
