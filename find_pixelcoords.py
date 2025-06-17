@@ -97,7 +97,7 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
             
             for ind1 in range(len(im_pick_params)):
         
-                _, process_im = cv2.threshold(sub_im[:,:,im_pick_params[ind1][0]], 5, 255, cv2.THRESH_BINARY_INV)
+                _, process_im = cv2.threshold(sub_im[:,:,im_pick_params[ind1][0]], 2, 255, cv2.THRESH_BINARY_INV)
                 process_contours, _ = cv2.findContours(process_im, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         
                 pick_temp = []
@@ -114,12 +114,12 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
                 for ind2 in range(len(process_contours)):
         
                     pick_img = np.zeros_like(process_im)
-                    cv2.drawContours(pick_img, process_contours, ind2, color=255, thickness=-1)
+                    pick_img = cv2.drawContours(pick_img, process_contours, ind2, color=255, thickness=-1)
                     rind,cind = np.where(pick_img)
                     true_x_inds = np.round(xrange[cind])
         
                     ########## Attempt to exclude bad contours
-                    if len(rind) > im_pick_params[ind1][1]:
+                    if len(np.unique(cind)) > im_pick_params[ind1][1]:
         
                         ##################################### Here is the case where you just want a contour's centroid
                         if im_pick_params[ind1][2] == 0:

@@ -12,7 +12,7 @@ import numpy as np
 ################################################################################################
 
 
-def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0):
+def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trace_spacing=1):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
@@ -50,6 +50,9 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0):
         
         if fn_ind == 0:
             radar_data = ndh.loadmat(fn_temp);
+
+            if 'Bottom' not in radar_data.keys():
+                radar_data['Bottom'] = np.zeros(radar_data['Surface'].shape)*np.nan
             
             ############# Here we exit if the file didn't load properly
             if len(radar_data.keys()) == 0:
@@ -61,6 +64,13 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0):
                 alternative_data_exist = 1
             else:
                 alternative_data_exist = 0
+
+            if trace_spacing > 1:
+                for key in concat_list:
+                    radar_data[key] = radar_data[key][::trace_spacing]
+                radar_data['Data'] = radar_data['Data'][:,::trace_spacing]
+                if alternative_data_exist == 1:
+                    radar_data['Data2'] = radar_data['Data2'][:,::trace_spacing]
             
             xy = ndh.polarstereo_fwd(radar_data['Latitude'],radar_data['Longitude'])
             distance = ndh.distance_vector(xy['x'],xy['y'])
@@ -73,7 +83,13 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0):
             
         if fn_ind > 0:
             
-            radar_data_temp = ndh.loadmat(fn_temp)            
+            radar_data_temp = ndh.loadmat(fn_temp)     
+            if trace_spacing > 1:
+                for key in concat_list:
+                    radar_data_temp[key] = radar_data_temp[key][::trace_spacing]
+                radar_data_temp['Data'] = radar_data_temp['Data'][:,::trace_spacing]
+                if alternative_data_exist == 1:
+                    radar_data_temp['Data2'] = radar_data_temp['Data2'][:,::trace_spacing]
             
             xy_temp = ndh.polarstereo_fwd(radar_data_temp['Latitude'],radar_data_temp['Longitude'])
             

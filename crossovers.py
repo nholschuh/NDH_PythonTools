@@ -21,7 +21,6 @@ def crossovers(line1,line2):
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Adapted from: https://stackoverflow.com/questions/17928452/find-all-intersections-of-xy-data-point-graph-with-numpy
     """
-    import numpy.core.umath_tests as ut
 
     ############# Pretty sure we don't need this
     if 0:
@@ -50,7 +49,7 @@ def crossovers(line1,line2):
     mat_inv /= det[..., np.newaxis, np.newaxis] 
 
 
-    params = ut.matrix_multiply(mat_inv, rhs[..., np.newaxis])
+    params = np.matmul(mat_inv, rhs[..., np.newaxis])
     intersection = np.all((params > 0.0001) & (params < 0.9999), axis=(-1, -2))  
     p0_s = params[intersection, 0, :] * mat[intersection, :, 0]          
 

@@ -40,7 +40,7 @@ def smooth_ndh(input_array,smooth_window,window_type='Boxcar'):
             smoothing_kernel = np.exp(-np.power(x, 2.) / (2 * np.power(1, 2.)))
         
 
-    input_array[input_array == np.NaN] = 0
+    input_array[np.isnan(input_array)] = 0
     first_out = signal.fftconvolve(input_array, smoothing_kernel, mode = 'same')
     scalar = signal.fftconvolve(np.ones(input_array.shape), smoothing_kernel, mode = 'same')
     out_data = first_out / scalar;
