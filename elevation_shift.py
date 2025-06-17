@@ -1,9 +1,16 @@
-import numpy as np
-import sys
-sys.path.append('/mnt/data01/Code/')
+################ This is the import statement required to reference scripts within the package
+import os,sys,glob
+ndh_tools_path_opts = [
+    '/mnt/data01/Code/',
+    '/home/common/HolschuhLab/Code/'
+]
+for i in ndh_tools_path_opts:
+    if os.path.isfile(i): sys.path.append(i)
+################################################################################################
 
 from NDH_Tools import find_nearest
 from NDH_Tools import interpNaN 
+import numpy as np
 
 def elevation_shift(data,time,surface,elevation,bed,disp_flag=0):
     """

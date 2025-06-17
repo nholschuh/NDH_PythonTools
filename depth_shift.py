@@ -1,6 +1,15 @@
+################ This is the import statement required to reference scripts within the package
+import os,sys,glob
+ndh_tools_path_opts = [
+    '/mnt/data01/Code/',
+    '/home/common/HolschuhLab/Code/'
+]
+for i in ndh_tools_path_opts:
+    if os.path.isfile(i): sys.path.append(i)
+################################################################################################
+
 import numpy as np
-import sys
-sys.path.append('/mnt/data01/Code/')
+import NDH_Tools as ndh
 
 from NDH_Tools import find_nearest
 from NDH_Tools import interpNaN 
