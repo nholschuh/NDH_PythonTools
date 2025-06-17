@@ -44,7 +44,8 @@ def cresis_season(y,m=0,d=0,ant1_gre2=1):
     ########################### Here we find the season metadata. This file was produced
     ########################### from an external matlab script named
     season_metadata_dirs = [
-        '/mnt/data01/Data/RadarData/CReSIS_Filestructure/'
+        '/mnt/data01/Data/RadarData/CReSIS_Filestructure/',
+        '/home/common/HolschuhLab/Data/RadarData/'
     ]
     for i in season_metadata_dirs:
         if os.path.isdir(i): season_metadata_path=i
