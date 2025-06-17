@@ -37,7 +37,15 @@ def find_cresisfiles(y,m=0,d=0,seg=0,frm=0,plus_or_minus_frames=0):
     sys.path.append('/mnt/data01/Code/')
     import NDH_Tools as ndh
 
-    root_dir = '/mnt/data01/Data/RadarData/CReSIS_Filestructure/ct_data/rds/'
+    root_dir_opts = ['/mnt/data01/Data/RadarData/CReSIS_Filestructure/ct_data/rds/',
+                     '/home/common/HolschuhLab/Data/RadarData/']
+    for rd in root_dir_opts:
+        if os.path.isdir(rd):
+            root_dir = rd
+            break
+
+    if 'root_dir' not in locals():
+        raise Exception("There doesn't appear to be any radar directory")
     
     if isinstance(y,str) == 1:
         if y[0] == 'D':

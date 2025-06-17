@@ -64,8 +64,8 @@ def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,dop
     theta_deg1 = np.rad2deg(music_data['Tomo']['theta'][:,0])[:,0]
     theta_deg2 = doppler_data2['slope_axis']
     theta_deg3 = doppler_data3['slope_axis']
-    theta_min = np.min([theta_deg2[0],theta_deg3[0])
-    theta_max = np.max([theta_deg2[-1],theta_deg3[-1])
+    theta_min = np.min([theta_deg2[0],theta_deg3[0]])
+    theta_max = np.max([theta_deg2[-1],theta_deg3[-1]])
     
 
     ############## Initiate the figure
