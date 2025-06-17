@@ -8,8 +8,8 @@ for i in ndh_tools_path_opts:
     if os.path.isfile(i): sys.path.append(i)
 ################################################################################################
 
-from NDH_Tools import find_nearest
-from NDH_Tools import interpNaN 
+
+import NDH_Tools as ndh
 import numpy as np
 
 def elevation_shift(data,time,surface,elevation,bed,disp_flag=0):
@@ -87,7 +87,7 @@ def elevation_shift(data,time,surface,elevation,bed,disp_flag=0):
             ind_flag2 = 0
 
         if ind_flag2 == 1:
-            temp_inds = interpNaN(bed)
+            temp_inds = ndh.interpNaN(bed)
             temp_inds[np.where(temp_inds < 1)] = 1
             bed_time = time[np.round(temp_inds).astype(int)-1];
         else:
@@ -115,7 +115,7 @@ def elevation_shift(data,time,surface,elevation,bed,disp_flag=0):
 
     ### This fills NaN's with the closest picked value
     for i in np.arange(len(unfilled_inds)):
-        replace_ind = find_nearest(filled_inds,unfilled_inds[i])
+        replace_ind = ndh.find_nearest(filled_inds,unfilled_inds[i])
         #[trash replace_ind]
         surface[unfilled_inds[i]] = surface[replace_ind['index'][0]]
 
@@ -125,7 +125,7 @@ def elevation_shift(data,time,surface,elevation,bed,disp_flag=0):
     surface_elev = np.zeros(len(data[1,:]))
     for i in np.arange(len(data[1,:])):
         if ind_flag == 0:
-            temp = find_nearest(time,np.array([surface[i]]))
+            temp = ndh.find_nearest(time,np.array([surface[i]]))
             shift_amount1[i] = temp['index'][0]
         else:
             shift_amount1[i] = np.round(surface[i])
@@ -141,7 +141,7 @@ def elevation_shift(data,time,surface,elevation,bed,disp_flag=0):
     top = np.max(surface_elev) + 20
 
 
-    surface_elev = interpNaN(surface_elev);
+    surface_elev = ndh.interpNaN(surface_elev);
 
     shift_amount2 = np.zeros(len(data[1,:]))
     for i in np.arange(len(data[1,:])):
