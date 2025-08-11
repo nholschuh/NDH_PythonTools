@@ -3,6 +3,7 @@ import os,sys,glob
 ndh_tools_path_opts = [
     '/mnt/data01/Code/',
     '/home/common/HolschuhLab/Code/'
+    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
 ]
 for i in ndh_tools_path_opts:
     if os.path.isfile(i): sys.path.append(i)
@@ -38,7 +39,8 @@ def find_cresisfiles(y,m=0,d=0,seg=0,frm=0,plus_or_minus_frames=0):
     import NDH_Tools as ndh
 
     root_dir_opts = ['/mnt/data01/Data/RadarData/CReSIS_Filestructure/ct_data/rds/',
-                     '/home/common/HolschuhLab/Data/RadarData/']
+                     '/home/common/HolschuhLab/Data/RadarData/',
+                    '/kucresis/scratch/dataproducts/opr_data/rds/']
     for rd in root_dir_opts:
         if os.path.isdir(rd):
             root_dir = rd
@@ -77,7 +79,7 @@ def find_cresisfiles(y,m=0,d=0,seg=0,frm=0,plus_or_minus_frames=0):
         type_fdrs,type_fdrs_ind = ndh.str_compare(processing_types,ptype)
     
         for ind1,type_fdr in enumerate(type_fdrs):
-            if ind0 < 3:
+            if ind0 < 4:
                 file_opts = sorted(glob.glob(type_fdr+dayseg_str+'/'+filestr+'.mat'))
             else:
                 file_opts = sorted(glob.glob(type_fdr+dayseg_str+'/'+'_'.join(filestr.split('_')[1:])+'_bottom.mat'))

@@ -27,11 +27,13 @@ def spreading_correction(flight_elev, twtt, bed_power_dB=[]):
     import os,sys,glob
     ndh_tools_path_opts = [
         '/mnt/data01/Code/',
-        '/home/common/HolschuhLab/Code/'
+        '/home/common/HolschuhLab/Code/',
+        '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
     ]
     for i in ndh_tools_path_opts:
-        if os.path.isdir(i): sys.path.append(i); correction_root_dir=i;
+        if os.path.isfile(i): sys.path.append(i)
     ################################################################################################
+
     
     import xarray as xr
     import numpy as np
@@ -56,7 +58,7 @@ def spreading_correction(flight_elev, twtt, bed_power_dB=[]):
             bed_power_dB = np.array(bed_power_dB) 
 
     if len(bed_power_dB) == 0:
-        bed_power_dB = np.ones(flight_elev.shape)*np.NaN
+        bed_power_dB = np.ones(flight_elev.shape)*np.nan
     
     ############## Load in the pre-calculated spreading corrections
     ##### Built from Matlab 'Generate_SpreadingMatrix.m'

@@ -17,7 +17,13 @@ def pdf_from_pngs(imdir,pdfname):
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """ 
-    
+
     frames = '%s/*.png' % (imdir)
 
     os.system("convert -adjoin "+frames+" -gravity center -scale '90<x770<' "+pdfname)
+
+    if os.path.isfile(pdfname) == 0:
+        frames = '%s/*.jpg' % (imdir)
+    
+        os.system("convert -adjoin "+frames+" -gravity center -scale '90<x770<' "+pdfname)
+        

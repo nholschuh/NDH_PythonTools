@@ -2,12 +2,12 @@
 import os,sys,glob
 ndh_tools_path_opts = [
     '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/'
+    '/home/common/HolschuhLab/Code/',
+    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
 ]
 for i in ndh_tools_path_opts:
     if os.path.isfile(i): sys.path.append(i)
 ################################################################################################
-
 
 import NDH_Tools as ndh
 import numpy as np
@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import tqdm
 
 
-def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,doppler_data2,doppler_data3,frame_skip,ymax=30,max_amp=0,min_amp=0):
+def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,doppler_data2,doppler_data3,frame_skip,ymax=0,max_amp=0,min_amp=0):
     """
     % (C) Nick Holschuh - Amherst College - 2025 (Nick.Holschuh@gmail.com)
     % This function animates a delay doppler image
@@ -42,7 +42,7 @@ def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,dop
     music_edge_trim = 2
     
     if min_amp == 0:
-        min_amp1 = np.nanpercentile(10*np.log10(music_data['Tomo']['img'][::5,::5,::100].ravel()),10)
+        min_amp1 = np.nanpercentile(10*np.log10(music_data1['Tomo']['img'][::5,::5,::100].ravel()),10)
         min_amp2 = np.nanpercentile(doppler_data2['doppler_data'][::5,::5,::100].ravel(),10)
         if doppler2_plot_on == 1:
             min_amp3 = np.nanpercentile(doppler_data3['doppler_data'][::5,::5,::100].ravel(),10)
@@ -51,7 +51,7 @@ def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,dop
         min_amp2 = min_amp
         min_amp3 = min_amp
     if max_amp == 0:
-        max_amp1 = np.nanpercentile(10*np.log10(music_data['Tomo']['img'][::5,::5,::100].ravel()),99)
+        max_amp1 = np.nanpercentile(10*np.log10(music_data1['Tomo']['img'][::5,::5,::100].ravel()),99)
         max_amp2 = np.nanpercentile(doppler_data2['doppler_data'][::5,::5,::100].ravel(),99)
         if doppler2_plot_on == 1:
             max_amp3 = np.nanpercentile(doppler_data3['doppler_data'][::5,::5,::100].ravel(),99)
@@ -61,11 +61,47 @@ def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,dop
         max_amp3 = max_amp
     
     ############# DelayDoppler Image
-    theta_deg1 = np.rad2deg(music_data['Tomo']['theta'][:,0])[:,0]
+    theta_deg1 = np.rad2deg(music_data1['Tomo']['theta'][:,0])[:,0]
     theta_deg2 = doppler_data2['slope_axis']
     theta_deg3 = doppler_data3['slope_axis']
     theta_min = np.min([theta_deg2[0],theta_deg3[0]])
     theta_max = np.max([theta_deg2[-1],theta_deg3[-1]])
+
+    ############## Calculate bed power:
+    bed_index = ndh.find_nearest(radar_data['Time'],radar_data['Bottom'])
+    bed_index = bed_index['index']
+    
+    ################### Aggregating the bed power information
+    bed_power_window = []
+    bed_power_sample = []
+    averaging_halfwindow = 5
+    for i in np.arange(-1*averaging_halfwindow,averaging_halfwindow):
+        if i == 0:
+            bed_power_sample.append(10*np.log10(radar_data['Data'][bed_index.astype(int),np.arange(len(bed_index))]))
+        bed_power_window.append(radar_data['Data'][bed_index.astype(int)-+i,np.arange(len(bed_index))])
+    bed_power_window = np.array(bed_power_window)
+    bed_power_window = 10*np.log10(np.mean(bed_power_window,axis=0))
+    bed_power_sample = np.array(bed_power_sample)[0]
+
+    try:
+        corrections = ndh.spreading_correction(radar_data['Elevation']-depth_data['surface_elev'],radar_data['Bottom'])
+        skip_flag = 0
+        if np.min(np.isnan(corrections['raytracing'])) == 1:
+            skip_flag = 1
+    except:
+        corrections = {'raytracing':np.ones(radar_data['Elevation'].shape)*np.NaN}
+        skip_flag = 1
+
+    spreading_corrected_power_window = bed_power_window-corrections['raytracing']
+    spreading_corrected_power_sample = bed_power_sample-corrections['raytracing']
+
+    #################### Estimating attenuation rate by removing thickness dependent term
+    polyfit_inds = np.all([~np.isnan(depth_data['bed_elev']),~np.isnan(spreading_corrected_power_window)],axis=0)
+    p = np.polyfit(depth_data['bed_elev'][polyfit_inds],spreading_corrected_power_window[polyfit_inds],1)
+    spreading_attenuation_corrected_power_window = spreading_corrected_power_window - p[0]*depth_data['bed_elev']
+    spreading_attenuation_corrected_power_sample = spreading_corrected_power_sample - p[0]*depth_data['bed_elev']
+    dx = np.median(np.diff(radar_data['distance']))
+    smoothed_power = ndh.smooth_ndh(ndh.interpNaN(spreading_attenuation_corrected_power_window),int(500/dx))
     
 
     ############## Initiate the figure
@@ -74,11 +110,13 @@ def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,dop
     else:
         fig_size = 24
         
-    fig = plt.figure(figsize=(fig_size,8))
+    fig = plt.figure(figsize=(fig_size,12))
     if music_plot_on + doppler1_plot_on + doppler2_plot_on == 3:
-        gs = fig.add_gridspec(1,7,wspace=0.2,hspace=1)
+        gs = fig.add_gridspec(2,7,wspace=0.2,hspace=0.2,height_ratios=[10, 2])
+        ax_power = fig.add_subplot(gs[8:12:11])
     else:
-        gs = fig.add_gridspec(1,6,wspace=0.2,hspace=1)
+        gs = fig.add_gridspec(2,6,wspace=0.2,hspace=1.2,height_ratios=[10, 2])
+        ax_power = fig.add_subplot(gs[7])
         
     ax1 = fig.add_subplot(gs[0])
     ax2 = fig.add_subplot(gs[1:5])
@@ -92,7 +130,7 @@ def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,dop
     ############# Identifying the indecies for each dataset for the animation
     ### This is determined from the first doppler dataset
     slide_inds2 = np.arange(0,len(doppler_data2['distance']),frame_skip)
-    slide_inds1 = ndh.find_nearest(music_data['distance'],doppler_data2['distance'][slide_inds2])
+    slide_inds1 = ndh.find_nearest(music_data1['distance'],doppler_data2['distance'][slide_inds2])
     slide_inds1 = slide_inds1['index']
 
     if doppler2_plot_on == 1:
@@ -112,6 +150,18 @@ def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,dop
     ax2.set_yticks([])
     ax2.set_title(' '.join(radar_data['filename'])+'  -   Nadir Image')
     ax1.set_title('Direction of Arrival (Along-Track) Image')
+
+
+   ############# The Power Plot
+    ax_power.plot(radar_data['distance']/1000,spreading_attenuation_corrected_power_window,':',c=[0.5,0.5,0.5],lw=0.1)
+    ax_power.plot(radar_data['distance']/1000,smoothed_power,'-',c='black',label='Bed Power') 
+    ax_power.set_xlim(ndh.minmax(radar_data['distance']/1000))
+    ax_power.set_ylim(ndh.minmax(spreading_attenuation_corrected_power_sample[~np.isnan(spreading_attenuation_corrected_power_sample)])+np.array([-5,5]))
+    ax_power.legend(loc='upper right')
+    ax_power.set_ylabel('dB')
+    ax_power.set_xlabel('Distance (km)')
+    ax_power.set_ylim(ndh.minmax(smoothed_power)+np.array([-2,2]))
+                
     
     with writer.saving(fig, videoname, 100):
         for loop_ind in tqdm.tqdm(np.arange(len(slide_inds1))):
@@ -164,10 +214,13 @@ def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,dop
             ############## The along-track position
             ax2.plot([doppler_data2['distance'][slide_ind2]/1000,doppler_data2['distance'][slide_ind2]/1000],
                      [doppler_data2['Time'][0]*1e6,doppler_data2['Time'][-1]*1e6],ls=':',c='red')
-    
+
+            ax_power.axvline(doppler_data2['distance'][slide_ind2]/1000,ls=':',c='red')
+                   
             writer.grab_frame()
             
             ndh.remove_line(ax2,1)   
+            ndh.remove_line(ax_power,1)   
             if music_plot_on == 1:
                 ndh.remove_image(ax1,1)
     

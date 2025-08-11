@@ -1,15 +1,16 @@
 ################ This is the import statement required to reference scripts within the package
-import os,sys
+import os,sys,glob
 ndh_tools_path_opts = [
     '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/'
+    '/home/common/HolschuhLab/Code/',
+    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
 ]
 for i in ndh_tools_path_opts:
     if os.path.isfile(i): sys.path.append(i)
+################################################################################################
 
 import matplotlib.pyplot as plt
 import numpy as np
-################################################################################################
 
 
 def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trace_spacing=1):
@@ -84,6 +85,11 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
         if fn_ind > 0:
             
             radar_data_temp = ndh.loadmat(fn_temp)     
+
+            
+            if 'Bottom' not in radar_data_temp.keys():
+                radar_data_temp['Bottom'] = np.zeros(radar_data_temp['Surface'].shape)*np.nan
+                
             if trace_spacing > 1:
                 for key in concat_list:
                     radar_data_temp[key] = radar_data_temp[key][::trace_spacing]
@@ -162,8 +168,7 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
                                     extent=[radar_data['distance'][0]/1000,radar_data['distance'][-1]/1000,
                                             radar_data['Time'][0],radar_data['Time'][-1]],
                                     origin='lower',aspect='auto',cmap='gray_r')
-                ax = plt.gca()        
-                ax.invert_yaxis()
+                ax = plt.gca()
     
             else:
                 fig = plt.figure(figsize=(15,7))
@@ -186,8 +191,7 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
                                     extent=[radar_data['distance'][0]/1000,radar_data['distance'][-1]/1000,
                                             radar_data['Time'][0],radar_data['Time'][-1]],
                                     origin='lower',aspect='auto',cmap='gray_r')
-                ax = plt.gca()        
-                ax.invert_yaxis()
+                ax = plt.gca()     
     
             else:
                 fig = plt.figure(figsize=(15,7))

@@ -2,14 +2,16 @@
 import os,sys,glob
 ndh_tools_path_opts = [
     '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/'
+    '/home/common/HolschuhLab/Code/',
+    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
 ]
 for i in ndh_tools_path_opts:
     if os.path.isfile(i): sys.path.append(i)
 ################################################################################################
 
 
-def generate_pickingpdf(fn,picking_root_dir,frame_spacing=25,surf_dir='CSARP_surf_ndh',crop_type='100',clims=[], alternative_data_opt=0):
+
+def generate_pickingpdf(fn,picking_root_dir='',frame_spacing=25,surf_dir='CSARP_surf_ndh',crop_type='100',clims=[], alternative_data_opt=0):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %
@@ -202,8 +204,8 @@ def generate_pickingpdf(fn,picking_root_dir,frame_spacing=25,surf_dir='CSARP_sur
                   if len(radar_data.keys()) > 0:
                      bot_inds = ndh.find_nearest(radar_data['Time'],radar_data['Bottom'])['index'].astype(float)
                      surf_inds = ndh.find_nearest(radar_data['Time'],radar_data['Surface'])['index'].astype(float)        
-                     bot_inds[bot_inds == 0] = np.NaN
-                     surf_inds[surf_inds == 0] = np.NaN
+                     bot_inds[bot_inds == 0] = np.nan
+                     surf_inds[surf_inds == 0] = np.nan
                      if crop_type == '100' and np.min(np.isnan(bot_inds)) == 0:
                          bot_ind = np.nanmax(bot_inds)+100
                          crop_string = 'maxbotplus100'
@@ -302,8 +304,8 @@ def generate_pickingpdf(fn,picking_root_dir,frame_spacing=25,surf_dir='CSARP_sur
                  if len(radar_data.keys()) > 0:
                      bot_inds = ndh.find_nearest(radar_data['Time'],radar_data['Bottom'])['index'].astype(float)
                      surf_inds = ndh.find_nearest(radar_data['Time'],radar_data['Surface'])['index'].astype(float)        
-                     bot_inds[bot_inds == 0] = np.NaN
-                     surf_inds[surf_inds == 0] = np.NaN
+                     bot_inds[bot_inds == 0] = np.nan
+                     surf_inds[surf_inds == 0] = np.nan
        
        
                      if crop_type == '100' and np.min(np.isnan(bot_inds)) == 0:

@@ -34,11 +34,13 @@ def Image_PowerCorrection(radar_image,flight_elev,depth_axis,attenuation_val,att
     import os,sys,glob
     ndh_tools_path_opts = [
         '/mnt/data01/Code/',
-        '/home/common/HolschuhLab/Code/'
+        '/home/common/HolschuhLab/Code/',
+        '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
     ]
     for i in ndh_tools_path_opts:
-        if os.path.isdir(i): sys.path.append(i); correction_root_dir=i;
+        if os.path.isfile(i): sys.path.append(i)
     ################################################################################################
+
     
     ############## Load in the pre-calculated spreading corrections
     ##### Built from Matlab 'Generate_SpreadingMatrix.m'

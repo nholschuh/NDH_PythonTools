@@ -2,7 +2,7 @@ import numpy as np
 import tqdm
 
 
-def delay_doppler(radar_data, window_size=150, target_ind=0, ind_spacing=20, deg0_or_rad1=0, return_fft=1):
+def delay_doppler(radar_data, window_size=150, target_ind=0, ind_spacing=50, spacing_ind0_or_dist1=1, deg0_or_rad1=0, return_fft=1, airborne0_or_groundbased1=0, center_freq=0):
     """
     % (C) Peter Klisewicz - Amherst College - 2025
     %     Nick Holschuh - Amherst College - 2025 (Nick.Holschuh@gmail.com)
@@ -23,17 +23,12 @@ def delay_doppler(radar_data, window_size=150, target_ind=0, ind_spacing=20, deg
     perm=3.15
 
     distance = radar_data['distance']
+    dist_step = np.median(np.diff(distance))
     radar_image = radar_data['Data']
-    try:
-        system_center_f = radar_data['param_sar']
+
+    if center_freq == 0:
         try:
-            system_center_f = system_center_f['radar']['wfs'][0]['fc']
-            print('Center Frequency:',system_center_f)
-        except:
-            raise ValueError("The parameter structure you've provided didn't have the center frequency in the expected location.")
-    except:
-        try:
-            system_center_f = radar_data['param_qlook']
+            system_center_f = radar_data['param_sar']
             try:
                 system_center_f = system_center_f['radar']['wfs'][0]['fc']
                 print('Center Frequency:',system_center_f)
@@ -41,24 +36,45 @@ def delay_doppler(radar_data, window_size=150, target_ind=0, ind_spacing=20, deg
                 raise ValueError("The parameter structure you've provided didn't have the center frequency in the expected location.")
         except:
             try:
-                fs = []
-                for ind0,param in enumerate(radar_data['param_radar'][()]):
-                    if isinstance(param,type(np.ndarray([]))):
-                        for ind1,subparam in enumerate(param):
-                            if isinstance(subparam,int):
-                                if np.all([subparam > 5e7, subparam < 2e9]):
-                                    fs.append(subparam)
-                            
-                            for ind2,subparam2 in enumerate(subparam):
-                                if isinstance(subparam2,int):
-                                    if np.all([subparam2 > 5e7, subparam2 < 2e9]):
-                                        fs.append(subparam2)
-                fs = np.unique(fs)
-                system_center_f = np.mean(fs)
-                print('Center Frequency:',system_center_f)
-                           
+                system_center_f = radar_data['param_qlook']
+                try:
+                    system_center_f = system_center_f['radar']['wfs'][0]['fc']
+                    print('Center Frequency:',system_center_f)
+                except:
+                    raise ValueError("The parameter structure you've provided didn't have the center frequency in the expected location.")
             except:
-                raise ValueError('Can\'t find the right parameter structure in the file.')
+                try:
+                    system_center_f = radar_data['param_array']
+                    try:
+                        system_center_f = system_center_f['radar']['wfs'][0]['fc']
+                        print('Center Frequency:',system_center_f)
+                    except:
+                        raise ValueError("The parameter structure you've provided didn't have the center frequency in the expected location.")
+                except:
+                    try:
+                        fs = []
+                        for ind0,param in enumerate(radar_data['param_radar'][()]):
+                            if isinstance(param,type(np.ndarray([]))):
+                                for ind1,subparam in enumerate(param):
+                                    if isinstance(subparam,int):
+                                        if np.all([subparam > 5e7, subparam < 2e9]):
+                                            fs.append(subparam)
+                                    
+                                    for ind2,subparam2 in enumerate(subparam):
+                                        if isinstance(subparam2,int):
+                                            if np.all([subparam2 > 5e7, subparam2 < 2e9]):
+                                                fs.append(subparam2)
+                        fs = np.unique(fs)
+                        system_center_f = np.mean(fs)
+                        print('Center Frequency:',system_center_f)
+                                   
+                    except:
+                        raise ValueError('Can\'t find the right parameter structure in the file.')
+    else:
+        system_center_f = center_freq
+
+    if spacing_ind0_or_dist1 == 1:
+        ind_spacing = int(ind_spacing/dist_step)
     
     if target_ind == 0:
         target_inds = np.arange(0,len(distance),ind_spacing).astype(int)
@@ -66,7 +82,6 @@ def delay_doppler(radar_data, window_size=150, target_ind=0, ind_spacing=20, deg
         target_inds = [target_ind]
 
     #GET SPACIAL SEPARATION BETWEEN OBSERVATIONS
-    dist_step = np.median(np.diff(distance))
     ind_window = int(window_size/dist_step/2)
 
     ki = np.where(np.all([target_inds > ind_window, target_inds < len(distance)-ind_window],axis=0))[0]
@@ -116,7 +131,9 @@ def delay_doppler(radar_data, window_size=150, target_ind=0, ind_spacing=20, deg
         slopes = slopes*360/(2*np.pi)
         slope_axis = slope_axis*360/(2*np.pi)
 
-    return {'distance':distance[ki], 'doppler_data':at_volume ,'slopes': slopes, 'slope_axis': slope_axis, 'wavenumber_axis': wavenum_axis, 'Time':radar_data['Time'],'x':radar_data['x'][ki],'y':radar_data['y'][ki]}
+    data_pi = target_inds[ki]
+    
+    return {'distance':distance[data_pi], 'doppler_data':at_volume ,'slopes': slopes, 'slope_axis': slope_axis, 'wavenumber_axis': wavenum_axis, 'Time':radar_data['Time'],'x':radar_data['x'][data_pi],'y':radar_data['y'][data_pi],'Surface':radar_data['Surface'][data_pi],'Bottom':radar_data['Bottom'][data_pi]}
 
 
 

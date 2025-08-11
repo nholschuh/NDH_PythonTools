@@ -4,12 +4,13 @@ import numpy as np
 import os,sys,glob
 ndh_tools_path_opts = [
     '/mnt/data01/Code/',
-    '/mnt/l/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/'
+    '/home/common/HolschuhLab/Code/',
+    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
 ]
 for i in ndh_tools_path_opts:
-    if os.path.isdir(i): sys.path.append(i)
+    if os.path.isfile(i): sys.path.append(i)
 ################################################################################################
+
 
 import NDH_Tools as ndh
 

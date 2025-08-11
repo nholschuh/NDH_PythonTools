@@ -2,12 +2,12 @@
 import os,sys,glob
 ndh_tools_path_opts = [
     '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/'
+    '/home/common/HolschuhLab/Code/',
+    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
 ]
 for i in ndh_tools_path_opts:
     if os.path.isfile(i): sys.path.append(i)
 ################################################################################################
-
 
 import NDH_Tools as ndh
 import numpy as np
@@ -15,18 +15,21 @@ import matplotlib.pyplot as plt
 import tqdm
 
 
-def animate_music(videoname,music_dataframe_skip,ymax=30,center_ind=0,max_amp=0,min_amp=0):
+def animate_music(videoname,music_data,frame_skip=10,ymax=30,center_ind=0,min_amp=0,max_amp=0):
     """
     % (C) Nick Holschuh - Amherst College - 2025 (Nick.Holschuh@gmail.com)
     % This function animates a delay doppler image
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are as follows:
     %
-    %      radar_data - original radar data loaded with ndh.radar_load
-    %      depth_data - radar image with removed air travel time
-    %      target ind - A specific index in the radar image. If 0, calculate over a rolling window
-    %      window_size - The number of samples to include in the fft
-    %      deg 
+    %      videoname - String (ending in .mp4) containing the file to write to
+    %      music_data - MUSIC data loaded with radar_load_music
+    %      frame_skip - An integer value, describing the spacing between presented MUSIC slices. 
+    %      ymax - The maximum two way travel time to include in the plot (in microseconds)
+    %      center_ind - The index associated with nadir for the cross-track dimension of the array. Set
+    %                   to 0 if you want the value to be automatically determined
+    %      min_amp - The vmin set across the images. If unknown, set to 0.
+    %      max_amp - The vmax set across the images. If unknown, set to 0
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """

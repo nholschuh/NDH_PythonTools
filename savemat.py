@@ -1,18 +1,19 @@
+################ This is the import statement required to reference scripts within the package
+import os,sys,glob
+ndh_tools_path_opts = [
+    '/mnt/data01/Code/',
+    '/home/common/HolschuhLab/Code/',
+    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
+]
+for i in ndh_tools_path_opts:
+    if os.path.isfile(i): sys.path.append(i)
+################################################################################################
+
+
 import hdf5storage
 import scipy.io
 import mat73
 import numpy as np
-import os
-
-################ This is the import statement required to reference scripts within the package
-import os,sys
-ndh_tools_path_opts = [
-    '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/'
-]
-for i in ndh_tools_path_opts:
-    if os.path.isfile(i): sys.path.append(i)
-#################################################################
 
 def savemat(matfiledata,fn,debug_flag=0):
     """
@@ -30,14 +31,16 @@ def savemat(matfiledata,fn,debug_flag=0):
     """ 
     
     from NDH_Tools import remove_key
+
+    matfiledata = deep_replace_none(matfiledata)
     
     rm_keys = []
     for i in list(matfiledata):
         try:
             if isinstance(matfiledata[i],mat73.AttrDict):
                 rm_keys.append(i)
-            if isinstance(matfiledata[i],type([])):
-                matfiledata[i] = np.array(matfiledata[i], dtype=numpy.object)
+            #if isinstance(matfiledata[i],type([])):
+            #    matfiledata[i] = np.array(matfiledata[i], dtype=numpy.object)
         except:
             pass
             
@@ -50,10 +53,10 @@ def savemat(matfiledata,fn,debug_flag=0):
     
     try:
         try:
-            try:
-                os.remove(fn)
-            except:
-                pass
+            #try:
+            #    os.remove(fn)
+            #except:
+            #    pass
             hdf5storage.write(matfiledata, '.', fn, matlab_compatible=True)
             if debug_flag == 1:
                 print('Written using the hdf5 writer')
@@ -63,4 +66,15 @@ def savemat(matfiledata,fn,debug_flag=0):
                 print('Written using the scipy.io package')
     except:
         print('Something is wrong, and the savemat functions failed.')
-    
+
+def deep_replace_none(obj):
+        if isinstance(obj, dict):
+            return {k: deep_replace_none(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [deep_replace_none(item) for item in obj]
+        elif isinstance(obj, tuple):
+            return tuple(deep_replace_none(item) for item in obj)
+        elif obj is None:
+            return 0
+        else:
+            return obj

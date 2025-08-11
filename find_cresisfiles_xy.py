@@ -40,9 +40,10 @@ def find_cresisfiles_xy(ant0_or_gre1,point0_outline1_grid2,location_input,filena
     ndh_tools_path_opts = [
         '/mnt/data01/Code/',
         '/home/common/HolschuhLab/Code/'
+        '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
     ]
     for i in ndh_tools_path_opts:
-        if os.path.isdir(i): sys.path.append(i); sector_root_dir=i;
+        if os.path.isfile(i): sys.path.append(i)
     ################################################################################################
     
     import NDH_Tools as ndh

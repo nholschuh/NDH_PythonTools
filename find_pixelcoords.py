@@ -2,11 +2,13 @@
 import os,sys,glob
 ndh_tools_path_opts = [
     '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/'
+    '/home/common/HolschuhLab/Code/',
+    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
 ]
 for i in ndh_tools_path_opts:
     if os.path.isfile(i): sys.path.append(i)
 ################################################################################################
+
 
 def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0,predefined_row_inds=[]):
     """
@@ -31,7 +33,7 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
     %                             ### ---- the aggregation type (0: average of marker, 1: horizontal bar)
     %                             ### ---- distance threshold for pixel combination or separation
     %                             ### ---- the distance calculation method (0:true or 1:vertical or 2:overweight horizontal)
-    %                       0 defaults to [[0,5,0,5],[2,25,1,10]] which looks for blue points and red lines
+    %                       0 defaults to [[0,5,0,5,1],[2,25,1,10,1]] which looks for blue points and red lines
     %     predefined_row_inds - Some images have white pixels in the plot. This allows you to predefine
     %                          which rows should be treated as "within the image"
     %

@@ -6,7 +6,7 @@ import xarray as xr
 class CustomError(Exception):
      pass
 
-def regrid(indata,inx,iny,newx,newy):
+def regrid(indata,inx,iny,newx,newy,interpolation_method="linear"):
     """
     % (C) Nick Holschuh - Amherst College - 2022 (Nick.Holschuh@gmail.com)
     % This function takes a gridded dataset and redefines it on a new mesh
@@ -18,6 +18,8 @@ def regrid(indata,inx,iny,newx,newy):
     %      iny -- (str) coordinate variable name orarray with the original y axis values
     %      newx -- array with the new x axis
     %      newy -- array with the new y axis
+    %      interpolation_method -- The method of interpolation to perform. Supported are “linear”, “nearest”, 
+    %                               “slinear”, “cubic”, “quintic” and “pchip”. 
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The outputs are as follows:
@@ -35,7 +37,7 @@ def regrid(indata,inx,iny,newx,newy):
             pass
         
         new_coords = { iny: newy, inx: newx}
-        outdata = indata.interp(new_coords, method="linear")
+        outdata = indata.interp(new_coords, method=interpolation_method)
 
     else:
         ############### Here we decide if we need to flip the input data to make axes increasing --
@@ -68,7 +70,7 @@ def regrid(indata,inx,iny,newx,newy):
             
             
         ############## Here is the actual function
-        my_interpolater = RegularGridInterpolator((iny,inx),indata,fill_value=-9999,bounds_error=False)
+        my_interpolater = RegularGridInterpolator((iny,inx),indata,fill_value=-9999,bounds_error=False,method=interpolation_method)
     
         finalx,finaly = np.meshgrid(newx,newy)
     

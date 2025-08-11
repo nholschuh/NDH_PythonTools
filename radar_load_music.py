@@ -1,15 +1,17 @@
 ################ This is the import statement required to reference scripts within the package
-import os,sys
+import os,sys,glob
 ndh_tools_path_opts = [
     '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/'
+    '/home/common/HolschuhLab/Code/',
+    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
 ]
 for i in ndh_tools_path_opts:
     if os.path.isfile(i): sys.path.append(i)
+################################################################################################
+
 
 import matplotlib.pyplot as plt
 import numpy as np
-################################################################################################
 
 
 def radar_load_music(fn):
