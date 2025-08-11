@@ -11,6 +11,7 @@ from .generate_animation import generate_animation
 from .loadmat import loadmat
 from .polarstereo_fwd import polarstereo_fwd
 from .str_compare import str_compare
+from .struct_to_dict import struct_to_dict
 ############################################################
 
 def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trace_spacing=1):
