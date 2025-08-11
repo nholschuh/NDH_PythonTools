@@ -1,18 +1,20 @@
-################ This is the import statement required to reference scripts within the package
-import os,sys,glob
-ndh_tools_path_opts = [
-    '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/',
-    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-]
-for i in ndh_tools_path_opts:
-    if os.path.isfile(i): sys.path.append(i)
-################################################################################################
-
-import NDH_Tools as ndh
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import tqdm
+
+################## NDH Tools self imports
+###########################################################
+from .find_nearest import find_nearest
+from .find_nearest_xy import find_nearest_xy
+from .generate_animation import generate_animation
+from .interpNaN import interpNaN
+from .minmax import minmax
+from .remove_image import remove_image
+from .remove_line import remove_line
+from .smooth_ndh import smooth_ndh
+from .spreading_correction import spreading_correction
+###########################################################
 
 
 def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,doppler_data2,doppler_data3,frame_skip,ymax=0,max_amp=0,min_amp=0):
@@ -22,7 +24,7 @@ def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,dop
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are as follows:
     %
-    %      radar_data - original radar data loaded with ndh.radar_load
+    %      radar_data - original radar data loaded with radar_load
     %      depth_data - radar image with removed air travel time
     %      music_data1 - The music file
     %      doppler_data2 - The SAR focused doppler images
@@ -68,7 +70,7 @@ def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,dop
     theta_max = np.max([theta_deg2[-1],theta_deg3[-1]])
 
     ############## Calculate bed power:
-    bed_index = ndh.find_nearest(radar_data['Time'],radar_data['Bottom'])
+    bed_index = find_nearest(radar_data['Time'],radar_data['Bottom'])
     bed_index = bed_index['index']
     
     ################### Aggregating the bed power information
@@ -84,7 +86,7 @@ def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,dop
     bed_power_sample = np.array(bed_power_sample)[0]
 
     try:
-        corrections = ndh.spreading_correction(radar_data['Elevation']-depth_data['surface_elev'],radar_data['Bottom'])
+        corrections = spreading_correction(radar_data['Elevation']-depth_data['surface_elev'],radar_data['Bottom'])
         skip_flag = 0
         if np.min(np.isnan(corrections['raytracing'])) == 1:
             skip_flag = 1
@@ -101,7 +103,7 @@ def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,dop
     spreading_attenuation_corrected_power_window = spreading_corrected_power_window - p[0]*depth_data['bed_elev']
     spreading_attenuation_corrected_power_sample = spreading_corrected_power_sample - p[0]*depth_data['bed_elev']
     dx = np.median(np.diff(radar_data['distance']))
-    smoothed_power = ndh.smooth_ndh(ndh.interpNaN(spreading_attenuation_corrected_power_window),int(500/dx))
+    smoothed_power = smooth_ndh(interpNaN(spreading_attenuation_corrected_power_window),int(500/dx))
     
 
     ############## Initiate the figure
@@ -125,17 +127,17 @@ def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,dop
     if doppler2_plot_on == 1:
         ax4 = fig.add_subplot(gs[6])
     
-    writer = ndh.generate_animation(20)
+    writer = generate_animation(20)
     
     ############# Identifying the indecies for each dataset for the animation
     ### This is determined from the first doppler dataset
     slide_inds2 = np.arange(0,len(doppler_data2['distance']),frame_skip)
-    slide_inds1 = ndh.find_nearest(music_data1['distance'],doppler_data2['distance'][slide_inds2])
+    slide_inds1 = find_nearest(music_data1['distance'],doppler_data2['distance'][slide_inds2])
     slide_inds1 = slide_inds1['index']
 
     if doppler2_plot_on == 1:
-        #slide_inds3 = ndh.find_nearest_xy(doppler_data3['distance'],doppler_data2['distance'][slide_inds2])
-        slide_inds3 = ndh.find_nearest_xy(np.stack([doppler_data3['x'],doppler_data3['y']]).T,np.stack([doppler_data2['x'][slide_inds2],doppler_data2['y'][slide_inds2]]).T)
+        #slide_inds3 = find_nearest_xy(doppler_data3['distance'],doppler_data2['distance'][slide_inds2])
+        slide_inds3 = find_nearest_xy(np.stack([doppler_data3['x'],doppler_data3['y']]).T,np.stack([doppler_data2['x'][slide_inds2],doppler_data2['y'][slide_inds2]]).T)
         slide_inds3 = slide_inds3['index']
     
     ############# The nadir image
@@ -155,12 +157,12 @@ def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,dop
    ############# The Power Plot
     ax_power.plot(radar_data['distance']/1000,spreading_attenuation_corrected_power_window,':',c=[0.5,0.5,0.5],lw=0.1)
     ax_power.plot(radar_data['distance']/1000,smoothed_power,'-',c='black',label='Bed Power') 
-    ax_power.set_xlim(ndh.minmax(radar_data['distance']/1000))
-    ax_power.set_ylim(ndh.minmax(spreading_attenuation_corrected_power_sample[~np.isnan(spreading_attenuation_corrected_power_sample)])+np.array([-5,5]))
+    ax_power.set_xlim(minmax(radar_data['distance']/1000))
+    ax_power.set_ylim(minmax(spreading_attenuation_corrected_power_sample[~np.isnan(spreading_attenuation_corrected_power_sample)])+np.array([-5,5]))
     ax_power.legend(loc='upper right')
     ax_power.set_ylabel('dB')
     ax_power.set_xlabel('Distance (km)')
-    ax_power.set_ylim(ndh.minmax(smoothed_power)+np.array([-2,2]))
+    ax_power.set_ylim(minmax(smoothed_power)+np.array([-2,2]))
                 
     
     with writer.saving(fig, videoname, 100):
@@ -219,13 +221,13 @@ def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,dop
                    
             writer.grab_frame()
             
-            ndh.remove_line(ax2,1)   
-            ndh.remove_line(ax_power,1)   
+            remove_line(ax2,1)   
+            remove_line(ax_power,1)   
             if music_plot_on == 1:
-                ndh.remove_image(ax1,1)
+                remove_image(ax1,1)
     
             if doppler1_plot_on == 1:
-                ndh.remove_image(ax3,1)
+                remove_image(ax3,1)
     
             if doppler2_plot_on == 1:
-                ndh.remove_image(ax4,1)
+                remove_image(ax4,1)

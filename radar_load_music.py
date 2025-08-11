@@ -1,18 +1,13 @@
-################ This is the import statement required to reference scripts within the package
-import os,sys,glob
-ndh_tools_path_opts = [
-    '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/',
-    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-]
-for i in ndh_tools_path_opts:
-    if os.path.isfile(i): sys.path.append(i)
-################################################################################################
-
-
 import matplotlib.pyplot as plt
 import numpy as np
 
+################## NDH Tools self imports
+###########################################################
+from .distance_vector import distance_vector
+from .find_nearest_xy import find_nearest_xy
+from .loadmat import loadmat
+from .polarstereo_fwd import polarstereo_fwd
+###########################################################
 
 def radar_load_music(fn):
     """
@@ -32,9 +27,6 @@ def radar_load_music(fn):
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """ 
-
-    
-    import NDH_Tools as ndh
     
     if isinstance(fn,list) == 0:
         fn = [fn]
@@ -45,9 +37,9 @@ def radar_load_music(fn):
     for fn_ind,fn_temp in enumerate(fn):
         
         if fn_ind == 0:
-            radar_data = ndh.loadmat(fn_temp);
-            xy = ndh.polarstereo_fwd(radar_data['Latitude'],radar_data['Longitude'])
-            distance = ndh.distance_vector(xy['x'],xy['y'])
+            radar_data = loadmat(fn_temp);
+            xy = polarstereo_fwd(radar_data['Latitude'],radar_data['Longitude'])
+            distance = distance_vector(xy['x'],xy['y'])
             radar_data['x'] = xy['x']
             radar_data['y'] = xy['y']
             radar_data['distance'] = distance
@@ -57,11 +49,11 @@ def radar_load_music(fn):
             
         if fn_ind > 0:
             
-            radar_data_temp = ndh.loadmat(fn_temp)
-            xy_temp = ndh.polarstereo_fwd(radar_data_temp['Latitude'],radar_data_temp['Longitude'])
+            radar_data_temp = loadmat(fn_temp)
+            xy_temp = polarstereo_fwd(radar_data_temp['Latitude'],radar_data_temp['Longitude'])
             
             ########## Here we deal with potentially overlapping frames
-            comp_dists = ndh.find_nearest_xy([xy_temp['x'],xy_temp['y']],[radar_data['x'][-1],radar_data['y'][-1]])
+            comp_dists = find_nearest_xy([xy_temp['x'],xy_temp['y']],[radar_data['x'][-1],radar_data['y'][-1]])
             
             if comp_dists['index'] != 0:                
                 for cut_key in concat_list:
@@ -72,7 +64,7 @@ def radar_load_music(fn):
                 xy_temp['y'] = xy_temp['y'][comp_dists['index'][0]:]
             
             inc_dist = comp_dists['distance'][0]
-            distance = ndh.distance_vector(xy_temp['x'],xy_temp['y'])
+            distance = distance_vector(xy_temp['x'],xy_temp['y'])
         
             if inc_dist < 0.01:
                 inc_dist = 0.01

@@ -1,18 +1,14 @@
-################ This is the import statement required to reference scripts within the package
-import os,sys,glob
-ndh_tools_path_opts = [
-    '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/',
-    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-]
-for i in ndh_tools_path_opts:
-    if os.path.isfile(i): sys.path.append(i)
-################################################################################################
-
-import NDH_Tools as ndh
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import tqdm
+
+################## NDH Tools self imports
+###########################################################
+from .generate_animation import generate_animation
+from .remove_image import remove_image
+from .remove_line import remove_line
+###########################################################
 
 def animate_delay_doppler(videoname,radar_data,depth_data,doppler_data,frame_skip,ymax=30,center_ind=0,max_amp=0,min_amp=0):
     """
@@ -21,7 +17,7 @@ def animate_delay_doppler(videoname,radar_data,depth_data,doppler_data,frame_ski
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are as follows:
     %
-    %      radar_data - original radar data loaded with ndh.radar_load
+    %      radar_data - original radar data loaded with radar_load
     %      depth_data - radar image with removed air travel time
     %      target ind - A specific index in the radar image. If 0, calculate over a rolling window
     %      window_size - The number of samples to include in the fft
@@ -49,7 +45,7 @@ def animate_delay_doppler(videoname,radar_data,depth_data,doppler_data,frame_ski
     ax1 = fig.add_subplot(gs[0])
     ax2 = fig.add_subplot(gs[1:5])
     
-    writer = ndh.generate_animation(20)
+    writer = generate_animation(20)
     
     ############# The nadir image
     slide_inds = np.arange(0,len(doppler_data['distance']),frame_skip)
@@ -87,5 +83,5 @@ def animate_delay_doppler(videoname,radar_data,depth_data,doppler_data,frame_ski
     
             writer.grab_frame()
             
-            ndh.remove_image(ax1,1)
-            ndh.remove_line(ax2,1)   
+            remove_image(ax1,1)
+            remove_line(ax2,1)   

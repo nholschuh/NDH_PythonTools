@@ -1,3 +1,15 @@
+import sys
+import numpy as np
+
+################## NDH Tools self imports
+###########################################################
+from .cresis_dataaggregator import cresis_dataaggregator
+from .find_cresisfiles import find_cresisfiles
+from .find_nearest import find_nearest
+from .flatten_list import flatten_list
+from .loadmat import loadmat
+from .within import within
+###########################################################
 
 def find_cresisfiles_xy(ant0_or_gre1,point0_outline1_grid2,location_input,filename_or_aggregateddata=0,remove_totaldata=1,subset_by_outline=1,earliest_year=1900):
     """
@@ -35,27 +47,13 @@ def find_cresisfiles_xy(ant0_or_gre1,point0_outline1_grid2,location_input,filena
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """    
 
-    ################ This is the import statement required to reference scripts within the package
-    import os,sys,glob
-    ndh_tools_path_opts = [
-        '/mnt/data01/Code/',
-        '/home/common/HolschuhLab/Code/'
-        '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-    ]
-    for i in ndh_tools_path_opts:
-        if os.path.isfile(i): sys.path.append(i)
-    ################################################################################################
-    
-    import NDH_Tools as ndh
-    import numpy as np
-
-    
+    sector_root_dir = os.path.dirname(os.path.abspath(__file__))
     if ant0_or_gre1 == 0:
         # These are made by the "Write_SectorFiles" script on the external drive. First you bulk aggregate, then write sectorfiles, 
         # then copy this into the Code folder
-        sectors = ndh.loadmat(sector_root_dir+'/NDH_Tools/CReSIS_Sectors_forDataSearch_Ant.mat')
+        sectors = ndh.loadmat(sector_root_dir+'/CReSIS_Sectors_forDataSearch_Ant.mat')
     else:
-        sectors = ndh.loadmat(sector_root_dir+'/NDH_Tools/CReSIS_Sectors_forDataSearch_Gre.mat')
+        sectors = ndh.loadmat(sector_root_dir+'/CReSIS_Sectors_forDataSearch_Gre.mat')
 
     ################### We load in the x_coords, y_coords, etc, from the file
     sector_x = sectors['sector_x']

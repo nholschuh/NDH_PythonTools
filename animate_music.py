@@ -1,19 +1,14 @@
-################ This is the import statement required to reference scripts within the package
-import os,sys,glob
-ndh_tools_path_opts = [
-    '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/',
-    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-]
-for i in ndh_tools_path_opts:
-    if os.path.isfile(i): sys.path.append(i)
-################################################################################################
-
-import NDH_Tools as ndh
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import tqdm
 
+################## NDH Tools self imports
+###########################################################
+from .generate_animation import generate_animation
+from .remove_image import remove_image
+from .remove_line import remove_line
+###########################################################
 
 def animate_music(videoname,music_data,frame_skip=10,ymax=30,center_ind=0,min_amp=0,max_amp=0):
     """
@@ -53,7 +48,7 @@ def animate_music(videoname,music_data,frame_skip=10,ymax=30,center_ind=0,min_am
     ax1 = fig.add_subplot(gs[0])
     ax2 = fig.add_subplot(gs[1:5])
     
-    writer = ndh.generate_animation(20)
+    writer = generate_animation(20)
     
     ############# The nadir image
     slide_inds = np.arange(0,len(music_data['Latitude']),frame_skip)
@@ -90,5 +85,5 @@ def animate_music(videoname,music_data,frame_skip=10,ymax=30,center_ind=0,min_am
     
             writer.grab_frame()
             
-            ndh.remove_image(ax1,1)
-            ndh.remove_line(ax2,1)   
+            remove_image(ax1,1)
+            remove_line(ax2,1)   

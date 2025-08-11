@@ -1,14 +1,19 @@
-################ This is the import statement required to reference scripts within the package
-import os,sys,glob
-ndh_tools_path_opts = [
-    '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/',
-    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-]
-for i in ndh_tools_path_opts:
-    if os.path.isfile(i): sys.path.append(i)
-################################################################################################
+import matplotlib.pyplot as plt
+import numpy as np
+import os
 
+################## NDH Tools self imports
+###########################################################
+from .distance_vector import distance_vector
+from .find_nearest import find_nearest
+from .index_list import index_list
+from .loadmat import loadmat
+from .polarstereo_fwd import polarstereo_fwd
+from .radar_load import radar_load
+from .remove_image import remove_image
+from .remove_line import remove_line
+from .str_compare import str_compare
+###########################################################
 
 
 def generate_pickingpdf(fn,picking_root_dir='',frame_spacing=25,surf_dir='CSARP_surf_ndh',crop_type='100',clims=[], alternative_data_opt=0):
@@ -58,8 +63,6 @@ def generate_pickingpdf(fn,picking_root_dir='',frame_spacing=25,surf_dir='CSARP_
     """ 
     
     import NDH_Tools as ndh
-    import matplotlib.pyplot as plt
-    import numpy as np
 
     
     ######### Set-up the directory where picks are placed
@@ -68,7 +71,7 @@ def generate_pickingpdf(fn,picking_root_dir='',frame_spacing=25,surf_dir='CSARP_
             
     #######################################################################################################
     ####################### We need to determine if this is a 2D file or a MUSIC File
-    str_opt, str_ind = ndh.str_compare([fn],'music')
+    str_opt, str_ind = str_compare([fn],'music')
 
     #######################################################################################################
     ######### For MUSIC files
@@ -91,9 +94,9 @@ def generate_pickingpdf(fn,picking_root_dir='',frame_spacing=25,surf_dir='CSARP_
 
 
         ########### Now the data anlysis begins
-        data = ndh.loadmat(fn)
-        xy = ndh.polarstereo_fwd(data['Latitude'],data['Longitude'])
-        distance = ndh.distance_vector(xy['x'],xy['y'])
+        data = loadmat(fn)
+        xy = polarstereo_fwd(data['Latitude'],data['Longitude'])
+        distance = distance_vector(xy['x'],xy['y'])
     
         
         fig = plt.figure(figsize=(5,10))
@@ -105,9 +108,9 @@ def generate_pickingpdf(fn,picking_root_dir='',frame_spacing=25,surf_dir='CSARP_
         fn2 = '/'.join(fn_list)
         
         #try:
-        surfdata = ndh.loadmat(fn2)
+        surfdata = loadmat(fn2)
         surf_dims = surfdata['surf']['y'][1].shape
-        bot_ind = ndh.find_nearest(data['Time'],np.array([np.max(surfdata['surf']['y'][1])]))
+        bot_ind = find_nearest(data['Time'],np.array([np.max(surfdata['surf']['y'][1])]))
         bot_ind['index'] = [np.min([bot_ind['index'][0]+100,len(data['Time'])])]
 
         #### Accounts for reduced size images for massive music files
@@ -122,7 +125,7 @@ def generate_pickingpdf(fn,picking_root_dir='',frame_spacing=25,surf_dir='CSARP_
         #### Now we loop through the frames we want to plot and generate an image for
         frame_print = np.arange(0,len(xy['x']),frame_spacing)
         for ind1,i in enumerate(frame_print):
-            ndh.remove_image(ax,1,verbose=0)
+            remove_image(ax,1,verbose=0)
 
             ####### Accounting for int images (for massive swath files)
             if data['Tomo']['img'].dtype == 'uint8':
@@ -132,9 +135,9 @@ def generate_pickingpdf(fn,picking_root_dir='',frame_spacing=25,surf_dir='CSARP_
                 
             ax.set_aspect('auto')
             if fn2 != 0:
-                ndh.remove_line(ax,1,verbose=0)
+                remove_line(ax,1,verbose=0)
                 #### Here we identify the indecies associated with the bottom picks and add them to the image
-                bot_inds = ndh.find_nearest(data['Time'],surfdata['surf']['y'][1][:,i])
+                bot_inds = find_nearest(data['Time'],surfdata['surf']['y'][1][:,i])
                 plt.plot(np.arange(0,surf_dims[0],4),bot_inds['index'][::4],ls='none',marker='^',c='green',ms=4,alpha=0.1)
             else:
                 pass
@@ -167,9 +170,9 @@ def generate_pickingpdf(fn,picking_root_dir='',frame_spacing=25,surf_dir='CSARP_
 ####################################################################################################################        
     #######################################################################################################
     ####################### The alternative is a directory full of standard files
-    str_opt, str_ind = ndh.str_compare([fn],'standard')
+    str_opt, str_ind = str_compare([fn],'standard')
     if len(str_opt) > 0:    
-         str_opt2, str_ind2 = ndh.str_compare([fn.split('/')[-2]],'standard')
+         str_opt2, str_ind2 = str_compare([fn.split('/')[-2]],'standard')
        
          if len(str_opt2) == 1:
              file_dirs = sorted(glob.glob(fn+'/*'))
@@ -192,18 +195,18 @@ def generate_pickingpdf(fn,picking_root_dir='',frame_spacing=25,surf_dir='CSARP_
                       for ind,i in enumerate(file_list):
                           if i.split('/')[-1][5] != 'i':
                               ki.append(ind)
-                      file_list = ndh.index_list(file_list,ki)
+                      file_list = index_list(file_list,ki)
                   else:
                       file_list = sorted(glob.glob(fn+'/*.mat'))
        
                   try:
-                      radar_data,depth_data = ndh.radar_load(file_list,plot_flag=0,elevation1_or_depth2=0,trace_spacing=frame_spacing)
+                      radar_data,depth_data = radar_load(file_list,plot_flag=0,elevation1_or_depth2=0,trace_spacing=frame_spacing)
                   except:
-                      radar_data,depth_data = ndh.radar_load('')
+                      radar_data,depth_data = radar_load('')
                       
                   if len(radar_data.keys()) > 0:
-                     bot_inds = ndh.find_nearest(radar_data['Time'],radar_data['Bottom'])['index'].astype(float)
-                     surf_inds = ndh.find_nearest(radar_data['Time'],radar_data['Surface'])['index'].astype(float)        
+                     bot_inds = find_nearest(radar_data['Time'],radar_data['Bottom'])['index'].astype(float)
+                     surf_inds = find_nearest(radar_data['Time'],radar_data['Surface'])['index'].astype(float)        
                      bot_inds[bot_inds == 0] = np.nan
                      surf_inds[surf_inds == 0] = np.nan
                      if crop_type == '100' and np.min(np.isnan(bot_inds)) == 0:
@@ -216,14 +219,14 @@ def generate_pickingpdf(fn,picking_root_dir='',frame_spacing=25,surf_dir='CSARP_
                          bot_ind = len(radar_data['Time'])
                          crop_string = 'nocrop'      
                          
-                     ndh.remove_image(ax,1,verbose=0)
-                     ndh.remove_line(ax,num_to_remove,verbose=0)
+                     remove_image(ax,1,verbose=0)
+                     remove_line(ax,num_to_remove,verbose=0)
                      if np.isnan(bot_ind) == 1:
                          plt.plot(0,0)
                      else:
                          ########### This accomodates files that have more than one data type
                          if alternative_data_opt == 1:
-                             find_data_opts = ndh.str_compare(radar_data.keys,'Data2')
+                             find_data_opts = str_compare(radar_data.keys,'Data2')
                              if len(find_data_opts[0]) > 0:
                                  radar_data['Data'] = radar_data['Data2']
                          if len(clims) > 0:
@@ -243,8 +246,8 @@ def generate_pickingpdf(fn,picking_root_dir='',frame_spacing=25,surf_dir='CSARP_
                      ax.set_xlim([0,hbar])
                          
                   else:
-                      ndh.remove_image(ax,1,verbose=0)
-                      ndh.remove_line(ax,num_to_remove,verbose=0)
+                      remove_image(ax,1,verbose=0)
+                      remove_line(ax,num_to_remove,verbose=0)
                       plt.imshow([[1]],cmap='gray_r',vmin=0,vmax=5)
                       num_to_remove = 0
                       ax.set_xlim([-0.5,0.5])
@@ -268,7 +271,7 @@ def generate_pickingpdf(fn,picking_root_dir='',frame_spacing=25,surf_dir='CSARP_
                  for ind,i in enumerate(file_list):
                      if i.split('/')[-1][5] != 'i':
                          ki.append(ind)
-                 file_list = ndh.index_list(file_list,ki)
+                 file_list = index_list(file_list,ki)
              else:
                  file_list = sorted(glob.glob(fn+'/*.mat'))
          
@@ -299,11 +302,11 @@ def generate_pickingpdf(fn,picking_root_dir='',frame_spacing=25,surf_dir='CSARP_
                  if os.path.isfile(fn_frame) == 0:
                      fn_frame = file_list[ind1]
        
-                 radar_data,depth_data = ndh.radar_load(fn_frame,plot_flag=0,elevation1_or_depth2=0)
+                 radar_data,depth_data = radar_load(fn_frame,plot_flag=0,elevation1_or_depth2=0)
        
                  if len(radar_data.keys()) > 0:
-                     bot_inds = ndh.find_nearest(radar_data['Time'],radar_data['Bottom'])['index'].astype(float)
-                     surf_inds = ndh.find_nearest(radar_data['Time'],radar_data['Surface'])['index'].astype(float)        
+                     bot_inds = find_nearest(radar_data['Time'],radar_data['Bottom'])['index'].astype(float)
+                     surf_inds = find_nearest(radar_data['Time'],radar_data['Surface'])['index'].astype(float)        
                      bot_inds[bot_inds == 0] = np.nan
                      surf_inds[surf_inds == 0] = np.nan
        
@@ -315,15 +318,15 @@ def generate_pickingpdf(fn,picking_root_dir='',frame_spacing=25,surf_dir='CSARP_
                          bot_ind = len(radar_data['Time'])
                          crop_string = 'nocrop'
                          
-                     ndh.remove_image(ax,1,verbose=0)
-                     ndh.remove_line(ax,2,verbose=0)
+                     remove_image(ax,1,verbose=0)
+                     remove_line(ax,2,verbose=0)
        
                      if np.isnan(bot_ind) == 1:
                          plt.plot(0,0)
                      else:
                          ########### This accomodates files that have more than one data type
                          if alternative_data_opt == 1:
-                             find_data_opts = ndh.str_compare(radar_data.keys,'Data2')
+                             find_data_opts = str_compare(radar_data.keys,'Data2')
                              if len(find_data_opts[0]) > 0:
                                  radar_data['Data'] = radar_data['Data2']
        

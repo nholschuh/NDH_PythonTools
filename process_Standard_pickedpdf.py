@@ -1,16 +1,22 @@
-################ This is the import statement required to reference scripts within the package
-import os,sys,glob
-ndh_tools_path_opts = [
-    '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/',
-    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-]
-for i in ndh_tools_path_opts:
-    if os.path.isfile(i): sys.path.append(i)
-################################################################################################
+import glob
+import os
+import numpy as np
+import matplotlib.pyplot as plt
 
+from PIL import Image
+import cv2
 
+from tqdm import tqdm, tqdm_notebook
 
+################## NDH Tools self imports
+###########################################################
+from .cresis_season import cresis_season
+from .find_nearest import find_nearest
+from .find_pixelcoords import find_pixelcoords
+from .loadmat import loadmat
+from .minmax import minmax
+from .savemat import savemat
+###########################################################
 
 def process_Standard_pickedpdf(picked_files,orig_radar_dir,layer_save, cresis_flag=1, layer_save_type=1, layer_load='', find_rows_from_fullimageset = 0):
     """
@@ -38,18 +44,6 @@ def process_Standard_pickedpdf(picked_files,orig_radar_dir,layer_save, cresis_fl
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """ 
-
-    import glob
-    import os
-    import numpy as np
-    import matplotlib.pyplot as plt
-    
-    from PIL import Image
-    import cv2
-    
-    from tqdm import tqdm, tqdm_notebook
-
-    import NDH_Tools as ndh
     
     deconstruct_dir = 'Picked_Temp'
     deconstruct_flag = 1

@@ -1,13 +1,15 @@
-################ This is the import statement required to reference scripts within the package
-import os,sys,glob
-ndh_tools_path_opts = [
-    '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/',
-    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-]
-for i in ndh_tools_path_opts:
-    if os.path.isfile(i): sys.path.append(i)
-################################################################################################
+import os
+from PIL import Image
+import numpy as np
+import cv2
+import tqdm
+
+################## NDH Tools self imports
+###########################################################
+from .find_nearest_xy import find_nearest_xy
+from .index_list import index_list
+from .minmax import minmax
+###########################################################
 
 
 def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0,predefined_row_inds=[]):
@@ -44,12 +46,6 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """ 
     
-    from PIL import Image
-    import NDH_Tools as ndh
-    import numpy as np
-    import cv2
-    import tqdm
-
 
     im_handle = Image.open(im_filename)
     np_frame = np.array(im_handle)
@@ -65,15 +61,15 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
             if 0:
                 im_frame = np.where(np_frame[:,:,3] == 255)
             
-                cinds = ndh.minmax(im_frame[1])
-                rinds = ndh.minmax(im_frame[0])
+                cinds = minmax(im_frame[1])
+                rinds = minmax(im_frame[0])
             else:
             ########################## This is meant to handle some spillover of lines and points outside the image
                 row_sum = np.sum(np_frame[:,:,2] == 255,axis=1)
                 col_sum = np.sum(np_frame[:,:,2] == 255,axis=0)
                 
-                rinds = ndh.minmax(np.where(row_sum <= np.percentile(row_sum,80)-1))
-                cinds = ndh.minmax(np.where(col_sum <= np.percentile(col_sum,80)-1))
+                rinds = minmax(np.where(row_sum <= np.percentile(row_sum,80)-1))
+                cinds = minmax(np.where(col_sum <= np.percentile(col_sum,80)-1))
 
             ########################## If we want to figure out the number of rows from the full dataset
             if len(predefined_row_inds) > 0:
@@ -201,7 +197,7 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
                             for ind3 in np.arange(ind2+1,len(pick_temp)):
                                 pa_1 = np.array(pick_temp[ind2])
                                 pa_2 = np.array(pick_temp[ind3])
-                                pick_dist_temp = ndh.find_nearest_xy(pa_1,pa_2)
+                                pick_dist_temp = find_nearest_xy(pa_1,pa_2)
                                 pick_dist[ind2,ind3] = np.min(pick_dist_temp['distance'])
         
                         min_pick_dist = np.min(pick_dist,1)
@@ -216,7 +212,7 @@ def find_pixelcoords(im_filename,original_width,original_height,im_pick_params=0
                             new_picks.append(pick_temp[i].tolist()+pick_temp[j].tolist())
         
                         keep_inds = list(set(np.arange(0,len(pick_temp)).tolist())-set(remove_inds))
-                        old_picks = ndh.index_list(pick_temp,keep_inds)
+                        old_picks = index_list(pick_temp,keep_inds)
         
         
                         if len(keep_inds) == 0:

@@ -1,19 +1,12 @@
-################ This is the import statement required to reference scripts within the package
-import os,sys,glob
-ndh_tools_path_opts = [
-    '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/',
-    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-]
-for i in ndh_tools_path_opts:
-    if os.path.isfile(i): sys.path.append(i)
-################################################################################################
-
-
 import hdf5storage
 import scipy.io
 import mat73
 import numpy as np
+
+################## NDH Tools self imports
+###########################################################
+from .remove_key import remove_key
+###########################################################
 
 def savemat(matfiledata,fn,debug_flag=0):
     """
@@ -29,8 +22,6 @@ def savemat(matfiledata,fn,debug_flag=0):
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """ 
-    
-    from NDH_Tools import remove_key
 
     matfiledata = deep_replace_none(matfiledata)
     

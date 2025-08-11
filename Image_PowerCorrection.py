@@ -29,23 +29,13 @@ def Image_PowerCorrection(radar_image,flight_elev,depth_axis,attenuation_val,att
     attenuation_val = 8.0
     attenuation_type = 0
     """
-    
-    ################ This is the import statement required to reference scripts within the package
-    import os,sys,glob
-    ndh_tools_path_opts = [
-        '/mnt/data01/Code/',
-        '/home/common/HolschuhLab/Code/',
-        '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-    ]
-    for i in ndh_tools_path_opts:
-        if os.path.isfile(i): sys.path.append(i)
-    ################################################################################################
 
     
     ############## Load in the pre-calculated spreading corrections
     ##### Built from Matlab 'Generate_SpreadingMatrix.m'
     ##### Converted to NC from 'Develop_spreadingcorrection.ipynb'
-    
+
+    correction_root_dir = os.path.dirname(os.path.abspath(__file__))
     spreading_correction_vals = xr.open_dataset(correction_root_dir+'NDH_Tools/SpreadingCorrection.nc')
 
     ############## Construct a synthetic twtt for the depth_image

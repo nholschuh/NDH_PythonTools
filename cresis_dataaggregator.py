@@ -1,18 +1,14 @@
-################ This is the import statement required to reference scripts within the package
-import os,sys,glob
-ndh_tools_path_opts = [
-    '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/',
-    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-]
-for i in ndh_tools_path_opts:
-    if os.path.isfile(i): sys.path.append(i)
-################################################################################################
-
+import os
 from collections.abc import Iterable
 import numpy as np
-import NDH_Tools as ndh
 
+################## NDH Tools self imports
+###########################################################
+from .loadmat import loadmat
+from .polarstereo_fwd import polarstereo_fwd
+from .savemat import savemat
+from .within import within
+###########################################################
 
 def cresis_dataaggregator(filelist,remove_totaldata=0,savename='',depthcap=0,at_samples=[],at_samples_type=0):
     """
@@ -50,7 +46,7 @@ def cresis_dataaggregator(filelist,remove_totaldata=0,savename='',depthcap=0,at_
     ###################### We loop through the list of input files
     for f_ind,fn in enumerate(filelist):
     
-        radar_data = ndh.loadmat(fn)
+        radar_data = loadmat(fn)
         final_varlist = []
     
         ################## We create a Bottom object if needed
@@ -60,10 +56,10 @@ def cresis_dataaggregator(filelist,remove_totaldata=0,savename='',depthcap=0,at_
             radar_data['Bottom'] = radar_data['Surface'].copy()*np.NaN
     
         ################## Calculate Polarstereo coordinates
-        xy = ndh.polarstereo_fwd(radar_data['Latitude'], radar_data['Longitude'])
+        xy = polarstereo_fwd(radar_data['Latitude'], radar_data['Longitude'])
         radar_data['x'] = xy['x']
         radar_data['y'] = xy['y']
-        radar_data['distance'] = ndh.polarstereo_fwd(radar_data['x'],radar_data['y'])
+        radar_data['distance'] = polarstereo_fwd(radar_data['x'],radar_data['y'])
         final_varlist.append('x')
         final_varlist.append('y')
     
@@ -79,7 +75,7 @@ def cresis_dataaggregator(filelist,remove_totaldata=0,savename='',depthcap=0,at_
             if at_samples_type == 0:
                 trace_index = np.arange(at_samples[f_ind][0],at_samples[f_ind][1]+1)
             else:
-                trace_index = np.where(ndh.within(np.stack([radar_data['x'],radar_data['y']]).T,at_samples))[0]
+                trace_index = np.where(within(np.stack([radar_data['x'],radar_data['y']]).T,at_samples))[0]
             radar_data['Data'] = radar_data['Data'][:,trace_index]
     
         ################## All objects that are the same shape as latitude get subset
@@ -138,7 +134,7 @@ def cresis_dataaggregator(filelist,remove_totaldata=0,savename='',depthcap=0,at_
     
     save_dict = {'Data_Vals':Data_Vals,'DV_Info':DV_Info,'start_indecies':start_indecies,'filenames':filenames,'Aggregated_Data':Aggregated_Data}
     if len(savename) > 0:
-        ndh.savemat(save_dict,savename)
+        savemat(save_dict,savename)
         
 
     return save_dict

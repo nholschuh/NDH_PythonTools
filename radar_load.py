@@ -1,17 +1,17 @@
-################ This is the import statement required to reference scripts within the package
-import os,sys,glob
-ndh_tools_path_opts = [
-    '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/',
-    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-]
-for i in ndh_tools_path_opts:
-    if os.path.isfile(i): sys.path.append(i)
-################################################################################################
-
 import matplotlib.pyplot as plt
 import numpy as np
 
+###########################################################
+################## NDH Tools self imports
+from .elevation_shift import elevation_shift
+from .distance_vector import distance_vector
+from .depth_shift import depth_shift
+from .find_nearest_xy import find_nearest_xy
+from .generate_animation import generate_animation
+from .loadmat import loadmat
+from .polarstereo_fwd import polarstereo_fwd
+from .str_compare import str_compare
+############################################################
 
 def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trace_spacing=1):
     """
@@ -38,9 +38,6 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """ 
 
-    
-    import NDH_Tools as ndh
-    
     if isinstance(fn,list) == 0:
         fn = [fn]
         
@@ -50,7 +47,7 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
     for fn_ind,fn_temp in enumerate(fn):
         
         if fn_ind == 0:
-            radar_data = ndh.loadmat(fn_temp);
+            radar_data = loadmat(fn_temp);
 
             if 'Bottom' not in radar_data.keys():
                 radar_data['Bottom'] = np.zeros(radar_data['Surface'].shape)*np.nan
@@ -60,7 +57,7 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
                 depth_data = radar_data
                 return radar_data,depth_data
             
-            data2_exist = ndh.str_compare(radar_data.keys(),'Data2')
+            data2_exist = str_compare(radar_data.keys(),'Data2')
             if len(data2_exist[0]) > 0:
                 alternative_data_exist = 1
             else:
@@ -73,8 +70,8 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
                 if alternative_data_exist == 1:
                     radar_data['Data2'] = radar_data['Data2'][:,::trace_spacing]
             
-            xy = ndh.polarstereo_fwd(radar_data['Latitude'],radar_data['Longitude'])
-            distance = ndh.distance_vector(xy['x'],xy['y'])
+            xy = polarstereo_fwd(radar_data['Latitude'],radar_data['Longitude'])
+            distance = distance_vector(xy['x'],xy['y'])
             radar_data['x'] = xy['x']
             radar_data['y'] = xy['y']
             radar_data['distance'] = distance
@@ -84,7 +81,7 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
             
         if fn_ind > 0:
             
-            radar_data_temp = ndh.loadmat(fn_temp)     
+            radar_data_temp = loadmat(fn_temp)     
 
             
             if 'Bottom' not in radar_data_temp.keys():
@@ -97,10 +94,10 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
                 if alternative_data_exist == 1:
                     radar_data_temp['Data2'] = radar_data_temp['Data2'][:,::trace_spacing]
             
-            xy_temp = ndh.polarstereo_fwd(radar_data_temp['Latitude'],radar_data_temp['Longitude'])
+            xy_temp = polarstereo_fwd(radar_data_temp['Latitude'],radar_data_temp['Longitude'])
             
             ########## Here we deal with potentially overlapping frames
-            comp_dists = ndh.find_nearest_xy([xy_temp['x'],xy_temp['y']],[radar_data['x'][-1],radar_data['y'][-1]])
+            comp_dists = find_nearest_xy([xy_temp['x'],xy_temp['y']],[radar_data['x'][-1],radar_data['y'][-1]])
             if comp_dists['index'] != 0:                
                 for cut_key in concat_list:
                     radar_data_temp[cut_key] = radar_data_temp[cut_key][comp_dists['index'][0]:]
@@ -109,7 +106,7 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
                 xy_temp['y'] = xy_temp['y'][comp_dists['index'][0]:]
             
             inc_dist = comp_dists['distance'][0]
-            distance = ndh.distance_vector(xy_temp['x'],xy_temp['y'])
+            distance = distance_vector(xy_temp['x'],xy_temp['y'])
         
             if inc_dist < 0.01:
                 inc_dist = 0.01
@@ -138,15 +135,15 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
     elif elevation1_or_depth2 == 1:
         if np.all([alternative_data_exist == 1, alternative_data_opt == 1]):
             print('Loading Alternative Data Set')
-            depth_data = ndh.elevation_shift(radar_data['Data2'],radar_data['Time'],radar_data['Surface'],radar_data['Elevation'],radar_data['Bottom'])
+            depth_data = elevation_shift(radar_data['Data2'],radar_data['Time'],radar_data['Surface'],radar_data['Elevation'],radar_data['Bottom'])
         else:
-            depth_data = ndh.elevation_shift(radar_data['Data'],radar_data['Time'],radar_data['Surface'],radar_data['Elevation'],radar_data['Bottom'])
+            depth_data = elevation_shift(radar_data['Data'],radar_data['Time'],radar_data['Surface'],radar_data['Elevation'],radar_data['Bottom'])
     elif elevation1_or_depth2 == 2:
         if np.all([alternative_data_exist == 1, alternative_data_opt == 1]):
             print('Loading Alternative Data Set')
-            depth_data = ndh.depth_shift(radar_data['Data2'],radar_data['Time'],radar_data['Surface'],radar_data['Elevation'],radar_data['Bottom'])
+            depth_data = depth_shift(radar_data['Data2'],radar_data['Time'],radar_data['Surface'],radar_data['Elevation'],radar_data['Bottom'])
         else:
-            depth_data = ndh.depth_shift(radar_data['Data'],radar_data['Time'],radar_data['Surface'],radar_data['Elevation'],radar_data['Bottom'])
+            depth_data = depth_shift(radar_data['Data'],radar_data['Time'],radar_data['Surface'],radar_data['Elevation'],radar_data['Bottom'])
             
     ##############################################################################################################
     ############# Here we either plot the data or deliver a plot string for future use

@@ -1,5 +1,5 @@
-
-
+import xarray as xr
+import numpy as np
 
 def spreading_correction(flight_elev, twtt, bed_power_dB=[]):
     """
@@ -22,22 +22,6 @@ def spreading_correction(flight_elev, twtt, bed_power_dB=[]):
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%
     """
-
-    ################ This is the import statement required to reference scripts within the package
-    import os,sys,glob
-    ndh_tools_path_opts = [
-        '/mnt/data01/Code/',
-        '/home/common/HolschuhLab/Code/',
-        '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-    ]
-    for i in ndh_tools_path_opts:
-        if os.path.isfile(i): sys.path.append(i)
-    ################################################################################################
-
-    
-    import xarray as xr
-    import numpy as np
-
     ############## Here, we make sure the input objects are the correct type
     if isinstance(flight_elev,type(np.array([]))) == 0:
         if isinstance(flight_elev,list) == 0:
@@ -63,8 +47,8 @@ def spreading_correction(flight_elev, twtt, bed_power_dB=[]):
     ############## Load in the pre-calculated spreading corrections
     ##### Built from Matlab 'Generate_SpreadingMatrix.m'
     ##### Converted to NC from 'Develop_spreadingcorrection.ipynb'
-    
-    spreading_correction_vals = xr.open_dataset(correction_root_dir+'NDH_Tools/SpreadingCorrection.nc')
+    correction_root_dir = os.path.dirname(os.path.abspath(__file__))
+    spreading_correction_vals = xr.open_dataset(correction_root_dir+'SpreadingCorrection.nc')
     
     x_search = xr.DataArray(flight_elev,dims=['vector_index'])
     y_search = xr.DataArray(twtt,dims=['vector_index'])

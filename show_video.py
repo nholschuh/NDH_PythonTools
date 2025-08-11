@@ -1,5 +1,10 @@
 from IPython.display import HTML 
 
+################## NDH Tools self imports
+###########################################################
+from .absolute_to_relative_path import absolute_to_relative_path
+###########################################################
+
 def show_video(videoname):
     """
     % (C) Nick Holschuh - Amherst College - 2022 (Nick.Holschuh@gmail.com)
@@ -13,21 +18,9 @@ def show_video(videoname):
     % 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """
-    
-    ################ This is the import statement required to reference scripts within the package
-    import os,sys,glob
-    ndh_tools_path_opts = [
-        '/mnt/data01/Code/',
-        '/home/common/HolschuhLab/Code/'
-    ]
-    for i in ndh_tools_path_opts:
-        if os.path.isdir(i): sys.path.append(i); correction_root_dir=i;
-
-    import NDH_Tools as ndh
-    ################################################################################################
 
     if videoname[0] == '/':
-        videoname = ndh.absolute_to_relative_path(videoname)
+        videoname = absolute_to_relative_path(videoname)
     
     return HTML("""
     <div align="middle">

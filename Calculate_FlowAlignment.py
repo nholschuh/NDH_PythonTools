@@ -1,19 +1,11 @@
-################ This is the import statement required to reference scripts within the package
-import os,sys,glob
-ndh_tools_path_opts = [
-    '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/',
-    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-]
-for i in ndh_tools_path_opts:
-    if os.path.isfile(i): sys.path.append(i)
-################################################################################################
-
-
+import os
 import xarray as xr
-import NDH_Tools as ndh
 import numpy as np
 
+################## NDH Tools self imports
+###########################################################
+from .vector_projection import vector_projection
+###########################################################
 
 def Calculate_FlowAlignment(profile_xy,velocity_xr, threshold = np.pi/18):
     """
@@ -44,7 +36,7 @@ def Calculate_FlowAlignment(profile_xy,velocity_xr, threshold = np.pi/18):
     path_scalar = np.sqrt(path_dx**2+path_dy**2)
     vel_scalar = np.sqrt(vel_dx**2+vel_dy**2)
 
-    proj_x,projy,mag=ndh.vector_projection(path_dx/path_scalar,path_dy/path_scalar,vel_dx/vel_scalar,vel_dy/vel_scalar)
+    proj_x,projy,mag=vector_projection(path_dx/path_scalar,path_dy/path_scalar,vel_dx/vel_scalar,vel_dy/vel_scalar)
     angle_out = np.arccos(mag)
     below_thresh = angle_out < threshold
 

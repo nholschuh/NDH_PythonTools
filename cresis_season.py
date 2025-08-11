@@ -1,14 +1,14 @@
-################ This is the import statement required to reference scripts within the package
-import os,sys,glob
-ndh_tools_path_opts = [
-    '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/',
-    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-]
-for i in ndh_tools_path_opts:
-    if os.path.isfile(i): sys.path.append(i)
-################################################################################################
+from datetime import date
+import numpy as np
+import os
+import sys
+import glob
 
+################## NDH Tools self imports
+###########################################################
+from .find_nearest import find_nearest
+from .loadmat import loadmat
+###########################################################
 
 def cresis_season(y,m=0,d=0,ant1_gre2=1):
     """
@@ -34,26 +34,11 @@ def cresis_season(y,m=0,d=0,ant1_gre2=1):
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """     
-    from datetime import date
-    import numpy as np
-    import os
-    import sys
-    import glob
-    sys.path.append('/mnt/data01/Code/')
-    import NDH_Tools as ndh
 
     ########################### Here we find the season metadata. This file was produced
     ########################### from an external matlab script named
-    season_metadata_dirs = [
-        '/mnt/data01/Data/RadarData/CReSIS_Filestructure/',
-        '/home/common/HolschuhLab/Data/RadarData/',
-        '/kucresis/scratch/dataproducts/opr_data/opr_tmp/NDH_Tools/'
-    ]
-    for i in season_metadata_dirs:
-        if os.path.isdir(i): season_metadata_path=i
-
-
-    season_opts = ndh.loadmat(season_metadata_path+'season_metadata.mat')
+    season_metadata_path = os.path.dirname(os.path.abspath(__file__))
+    season_opts = loadmat(season_metadata_path+'/season_metadata.mat')
     
     if isinstance(y,str) == 1:
         if y[0] == 'D':
@@ -77,7 +62,7 @@ def cresis_season(y,m=0,d=0,ant1_gre2=1):
     exact_flag = 1;
 
     if len(match_ind) == 0:
-        match_ind = ndh.find_nearest(full_dates[:,0],target_date);
+        match_ind = find_nearest(full_dates[:,0],target_date);
         match_ind = match_ind['index'][0]
         exact_flag = 0;
 

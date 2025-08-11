@@ -1,18 +1,9 @@
 import numpy as np
 
-################ This is the import statement required to reference scripts within the package
-import os,sys,glob
-ndh_tools_path_opts = [
-    '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/',
-    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-]
-for i in ndh_tools_path_opts:
-    if os.path.isfile(i): sys.path.append(i)
-################################################################################################
-
-
-import NDH_Tools as ndh
+##################  Tools self imports
+###########################################################
+from .heading import heading
+###########################################################
 
 def heading_line(in_x,in_y,distance,turn,heading=np.pi/2):
     """
@@ -46,7 +37,7 @@ def heading_line(in_x,in_y,distance,turn,heading=np.pi/2):
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """
     if len(in_x) > 1:
-        heading_in = ndh.heading(in_x,in_y)
+        heading_in = heading(in_x,in_y)
     else:
         heading_in = np.array([heading]);
         

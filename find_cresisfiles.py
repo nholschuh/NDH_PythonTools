@@ -1,14 +1,13 @@
-################ This is the import statement required to reference scripts within the package
-import os,sys,glob
-ndh_tools_path_opts = [
-    '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/'
-    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-]
-for i in ndh_tools_path_opts:
-    if os.path.isfile(i): sys.path.append(i)
-################################################################################################
+from datetime import date
+import os
+import sys
+import glob
 
+################## NDH Tools self imports
+###########################################################
+from .cresis_season import cresis_season
+from .str_compare import str_compare
+###########################################################
 
 def find_cresisfiles(y,m=0,d=0,seg=0,frm=0,plus_or_minus_frames=0):
     """
@@ -31,16 +30,11 @@ def find_cresisfiles(y,m=0,d=0,seg=0,frm=0,plus_or_minus_frames=0):
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """     
-    from datetime import date
-    import os
-    import sys
-    import glob
-    sys.path.append('/mnt/data01/Code/')
-    import NDH_Tools as ndh
 
     root_dir_opts = ['/mnt/data01/Data/RadarData/CReSIS_Filestructure/ct_data/rds/',
                      '/home/common/HolschuhLab/Data/RadarData/',
                     '/kucresis/scratch/dataproducts/opr_data/rds/']
+    
     for rd in root_dir_opts:
         if os.path.isdir(rd):
             root_dir = rd
@@ -65,7 +59,7 @@ def find_cresisfiles(y,m=0,d=0,seg=0,frm=0,plus_or_minus_frames=0):
 
     frm = frm+plus_or_minus_frames
                 
-    season = ndh.cresis_season(y,m,d)
+    season = cresis_season(y,m,d)
     dayseg_str = '%0.4d%0.2d%0.2d_%0.2d' % (y,m,d,seg)
     filestr = 'Data_%s_%0.3d' % (dayseg_str,frm)
     
@@ -76,7 +70,7 @@ def find_cresisfiles(y,m=0,d=0,seg=0,frm=0,plus_or_minus_frames=0):
     found_files = [[],[],[],[],[]]
     
     for ind0,ptype in enumerate(search_types):
-        type_fdrs,type_fdrs_ind = ndh.str_compare(processing_types,ptype)
+        type_fdrs,type_fdrs_ind = str_compare(processing_types,ptype)
     
         for ind1,type_fdr in enumerate(type_fdrs):
             if ind0 < 4:
@@ -89,7 +83,6 @@ def find_cresisfiles(y,m=0,d=0,seg=0,frm=0,plus_or_minus_frames=0):
                 temp_dir_name = file_select.split('/')
                 dir_names[ind0].append(temp_dir_name[-3])
     
-            #found_files[ind0] = ndh.flatten_list(found_files[ind0]);
     
     found_files = {'qlook':found_files[0],'qlook_dirs':dir_names[0],
                    'standard':found_files[1],'standard_dirs':dir_names[1],

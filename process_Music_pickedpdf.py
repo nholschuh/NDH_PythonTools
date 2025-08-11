@@ -1,16 +1,3 @@
-################ This is the import statement required to reference scripts within the package
-import os,sys,glob
-ndh_tools_path_opts = [
-    '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/',
-    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-]
-for i in ndh_tools_path_opts:
-    if os.path.isfile(i): sys.path.append(i)
-################################################################################################
-
-
-
 from tqdm import tqdm, tqdm_notebook
 from PIL import Image
 import cv2
@@ -19,6 +6,12 @@ import matplotlib.pyplot as plt
 import NDH_Tools as ndh
 import subprocess
 
+################## NDH Tools self imports
+###########################################################
+from .find_pixelcoords import find_pixelcoords
+from .loadmat import loadmat
+from .savemat import savemat
+###########################################################
 
 def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edgetrims=0,remove_framedir=1,blank_angles=[],gt_spacing=2,keep_initial_bot=1):
     """
@@ -67,9 +60,9 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
     ######## Here we load in the original surf files for modification
     surf_fn = data_dir+surf_load+'/'+day_seg+'/'+local_fn+'.mat'
     music_fn = data_dir+music_load+'/'+day_seg+'/'+local_fn+'.mat'
-    surf_data = ndh.loadmat(surf_fn)
+    surf_data = loadmat(surf_fn)
     print(music_fn)
-    times = ndh.loadmat(music_fn,['Time'])['Time'][0]
+    times = loadmat(music_fn,['Time'])['Time'][0]
     surf_pick = np.ones(surf_data['surf']['y'][3].shape)*np.NaN
 
     ######## These are the properties of the original file that need to be provided to the image processing
@@ -134,8 +127,8 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
         ## These are the 4th and 2nd pick params        #
         #################################################
 
-        picks = ndh.find_pixelcoords(frame_fn,original_width,original_height,im_pick_params=[[0,20,0,70,2],[2,25,1,10,1]])  
-        pixel_run_str =         'picks = ndh.find_pixelcoords(frame_fn,%d,%d,im_pick_params=[[0,20,0,70,2],[2,25,1,10,1]])' % (original_width,original_height)
+        picks = find_pixelcoords(frame_fn,original_width,original_height,im_pick_params=[[0,20,0,70,2],[2,25,1,10,1]])  
+        pixel_run_str =         'picks = find_pixelcoords(frame_fn,%d,%d,im_pick_params=[[0,20,0,70,2],[2,25,1,10,1]])' % (original_width,original_height)
 
     ##########################################################################################################
     # Part 6 #################################################################################################
@@ -252,7 +245,7 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
         
     surf_data['surf']['y'][7] = edge_trim
     surf_data['surf']['name'][7] = 'EdgeTrim'
-    ndh.savemat(dict(surf_data),data_dir+surf_save+'/'+day_seg+'/'+local_fn+'.mat')    
+    savemat(dict(surf_data),data_dir+surf_save+'/'+day_seg+'/'+local_fn+'.mat')    
     
     ############ In the event that there are more than one picked horizon
     if len(debris_edge) > 0:
@@ -269,7 +262,7 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
                 pass
             surf_data['surf']['y'][3] = debris_picks[ind1]
             surf_data['surf']['y'][7] = debris_edge[ind1]
-            ndh.savemat(surf_data,data_dir+surf_debris[ind1]+'/'+day_seg+'/'+local_fn+'.mat')
+            savemat(surf_data,data_dir+surf_debris[ind1]+'/'+day_seg+'/'+local_fn+'.mat')
     
     error_dict = {'frame_num':error_frames,'edge_and_surf_lengths':error_lengths,'picks':error_data,'images':error_ims,'frame_fns':error_fns}
 
