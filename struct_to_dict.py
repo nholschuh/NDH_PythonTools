@@ -1,3 +1,5 @@
+import numpy as np
+
 def struct_to_dict(x):
     """
     % (C) Nick Holschuh - Amherst College -- 2024 (Nick.Holschuh@gmail.com)
