@@ -61,16 +61,16 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
                 else:
                     return arr.tolist() if isinstance(arr, np.ndarray) else arr
             
-                keylist = radar_data.keys()
-                param_cleanup = 0
-                for key in keylist:
-                    if 'param' in key:
-                        if isinstance(radar_data[key],dict) == 0:
-                            radar_data[key] = struct_to_dict(radar_data[key])
-                            param_cleanup = 1
-                if param_cleanup == 1:
-                    print('Fixed parameter structure')
-                    
+            keylist = radar_data.keys()
+            param_cleanup = 0
+            for key in keylist:
+                if 'param' in key:
+                    if isinstance(radar_data[key],dict) == 0:
+                        radar_data[key] = struct_to_dict(radar_data[key])
+                        param_cleanup = 1
+            if param_cleanup == 1:
+                print('Fixed parameter structure')
+                
             
 
             if 'Bottom' not in radar_data.keys():
