@@ -52,7 +52,7 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
 
             ############################################################################################
             ############### A set of helper function to clean up the parameter sections of spreadsheets
-             def _unwrap0d(x):
+            def _unwrap0d(x):
                 """Unwrap 0-D numpy arrays repeatedly (handles arr[()] cases)."""
                 while isinstance(x, np.ndarray) and x.ndim == 0:
                     x = x[()]
