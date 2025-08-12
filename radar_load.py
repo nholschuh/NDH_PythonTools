@@ -51,7 +51,7 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
             radar_data = loadmat(fn_temp);
 
             ############### A helper function to clean up the parameter sections of spreadsheets
-            def struct_to_dict(x):
+            def struct_to_dict(x):+
                 def cv(o):
                     if isinstance(o, np.void):                          # structured scalar
                         return {n: cv(o[n]) for n in o.dtype.names}
@@ -62,14 +62,19 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
                     if isinstance(o, np.generic):                       # numpy scalar
                         return o.item()
                     return o
-                return cv(x)
+                    
+                if isinstance(x,dict) == 0:
+                    return cv(x)
+                else:
+                    return x
 
             keylist = radar_data.keys()
             param_cleanup = 0
             for key in keylist:
                 if 'param' in key:
-                    radar_data[key] = struct_to_dict(radar_data[key])
-                    param_cleanup = 1
+                    if isinstance(radar_data[key],dict) == 0:
+                        radar_data[key] = struct_to_dict(radar_data[key])
+                        param_cleanup = 1
             if param_cleanup == 1:
                 print('Fixed parameter structure')
                     
