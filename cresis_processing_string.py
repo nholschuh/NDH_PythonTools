@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import tqdm
+import glob
 
 ################## NDH Tools self imports
 ###########################################################
@@ -12,11 +13,12 @@ from .str_compare import str_compare
 def cresis_processing_string(filelist,collate=0,excludes=[],param_dir='/mnt/NDH_data/Google_Drive2/Research_Projects/00_CresisData/opr_params/'):
     """
     % (C) Nick Holschuh - Amherst College - 2025 (Nick.Holschuh@gmail.com)
-    % This function animates a delay doppler image
+    % This function creates a typical processing loop string for use with OPR
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are as follows:
     %
-    %      filelist
+    %      filelist -- list of files to reprocess
+    %      collate=0 -- set to 1 if used for tomo.collate run
     """
     param_spreadsheets = glob.glob(param_dir+'*rds*')
 

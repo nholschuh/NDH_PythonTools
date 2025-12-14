@@ -59,7 +59,7 @@ def process_Standard_Season_pickedpdf(picked_files,orig_radar_dir,layer_save, cr
             
         if not os.path.isdir(save_dir):
             os.makedirs(save_dir)
-            
+        
         ##########################################################################################################
         # Part 1 ##################################################################################################
         ######## Here we parse the name for the file information and the image specifications
@@ -81,7 +81,7 @@ def process_Standard_Season_pickedpdf(picked_files,orig_radar_dir,layer_save, cr
                       for ind,i in enumerate(file_list):
                           if i.split('/')[-1][5] != 'i':
                               ki.append(ind)
-                      file_list = ndh.index_list(file_list,ki)
+                      file_list = index_list(file_list,ki)
                 else:
                       file_list = sorted(glob.glob(day_seg+'/*.mat'))
                     
@@ -108,7 +108,7 @@ def process_Standard_Season_pickedpdf(picked_files,orig_radar_dir,layer_save, cr
             print('Starting the pdf deconstruction for: '+local_fn_whole)
             os_cmd = 'convert -quality 20 -density 144 %s %s/%s' % (fn,comb_deconstruct_dir,'Frame_%03d.png')
             os.system(os_cmd)
-        frame_list = sorted(glob.glob(comb_deconstruct_dir+'/*.png'))
+        im_list = sorted(glob.glob(comb_deconstruct_dir+'/*.png'))
             
     
         ##########################################################################################################
@@ -120,7 +120,7 @@ def process_Standard_Season_pickedpdf(picked_files,orig_radar_dir,layer_save, cr
         error_frames = []
         good_frames = []
         empty_frames = []
-        for ind1,frame_fn in enumerate(tqdm(frame_list)):
+        for ind1,frame_fn in enumerate(tqdm(im_list)):
     
             im_handle = Image.open(frame_fn)
             np_frame = np.array(im_handle).astype(float)
@@ -140,7 +140,7 @@ def process_Standard_Season_pickedpdf(picked_files,orig_radar_dir,layer_save, cr
                 keep_cols = np.where(color_totals_cols[:,1] != color_totals_cols[:,3])[0]
     
                 ######### Find the pixels associated with frame breaks, which are green
-                frame_breaks = np.where((color_totals_cols[:,1] - color_totals_cols[:,0]) > color_totals_cols[:,3]*0.5)[0]
+                frame_breaks = np.where((color_totals_cols[:,1] - color_totals_cols[:,0]) > color_totals_cols[:,3]*0.25)[0]
                 frame_breaks = np.concatenate([[keep_cols[0]],frame_breaks,[keep_cols[-1]]])
                 if len(frame_breaks) > 1:
                     ki = np.where(np.diff(frame_breaks) > 1)[0]
@@ -166,8 +166,8 @@ def process_Standard_Season_pickedpdf(picked_files,orig_radar_dir,layer_save, cr
     
             ######### Frame_break output x values:
             frame_breaks_x = (frame_breaks - keep_cols[0])/(keep_cols[-1]-keep_cols[0])*original_width
-            
-            picks = ndh.find_pixelcoords(frame_fn,original_width,original_height,im_pick_params=[[2,20,1,10,1]], predefined_row_inds=ndh.minmax(keep_rows)) 
+    
+            picks = find_pixelcoords(frame_fn,original_width,original_height,im_pick_params=[[2,20,1,10,1]], predefined_row_inds=minmax(keep_rows)) 
             
         ##########################################################################################################
         # Part 6 #################################################################################################
@@ -182,7 +182,7 @@ def process_Standard_Season_pickedpdf(picked_files,orig_radar_dir,layer_save, cr
                     ########## We loop through surfaces to figure out which frames are in play:
                     associated_frames = []
                     for ind2,i in enumerate(surfaces): 
-                        xinds = ndh.minmax(i[:,0])
+                        xinds = minmax(i[:,0])
                         min_frame = np.where(frame_breaks_x < xinds[0])[0]
                         if len(min_frame) == 0:
                             min_frame = 0
@@ -197,7 +197,7 @@ def process_Standard_Season_pickedpdf(picked_files,orig_radar_dir,layer_save, cr
                         associated_frames.append(np.arange(min_frame,max_frame+1))
     
                     ########## Now we construct an object to loop through the associated FRAMES that are relevant:
-                    all_picked_frames = np.unique(ndh.flatten_list(associated_frames))
+                    all_picked_frames = np.unique(flatten_list(associated_frames))
                     associated_surfaces = []
                     for frame_opt in all_picked_frames:
                         surf_temp_list = []
@@ -217,7 +217,7 @@ def process_Standard_Season_pickedpdf(picked_files,orig_radar_dir,layer_save, cr
                             os.makedirs(deep_savedir)
     
                         
-                        frame_data = ndh.loadmat(source_frame_fn)
+                        frame_data = loadmat(source_frame_fn)
                         layer_data = {'picks':[],'Latitude':frame_data['Latitude'],'Longitude':frame_data['Longitude'],
                                   'Elevation':frame_data['Elevation'],'Surface':frame_data['Surface'],'Bottom':frame_data['Bottom']}
                         
@@ -229,13 +229,21 @@ def process_Standard_Season_pickedpdf(picked_files,orig_radar_dir,layer_save, cr
     
                             if len(target_surf[:,0]) > 1:
                                 ############ Convert the arbitrary coordinates to in-frame coordinates
+    
+                                ################# Number of pixels within the image to the left boundary
                                 frame_xs_1 = (frame_breaks_x[source_frame_ind]-frame_breaks_x[0])/(frame_breaks_x[-1]-frame_breaks_x[0])*original_width
+                                ################# Number of pixels within the image to the right boundary
                                 frame_xs_2 = (frame_breaks_x[source_frame_ind+1]-frame_breaks_x[0])/(frame_breaks_x[-1]-frame_breaks_x[0])*original_width
+    
+                                ################# Pixel coordinates for the picks in the frame      
                                 true_frame_inds = (target_surf[:,0]-frame_xs_1)/(frame_xs_2-frame_xs_1)*frame_width
-        
+    
+                                
                                 interp_frame_inds = np.arange(np.min(true_frame_inds),np.max(true_frame_inds))
                                 if np.max(interp_frame_inds) > len(layer_data['Latitude']):
                                     interp_frame_inds = interp_frame_inds[interp_frame_inds < len(layer_data['Latitude'])]
+                                if np.min(interp_frame_inds) < 0 :
+                                    interp_frame_inds = interp_frame_inds[interp_frame_inds > -1]
         
                                 true_frame_time_inds = target_surf[:,1]/original_height*frame_height
                                 interp_time_inds = np.interp(interp_frame_inds,true_frame_inds,true_frame_time_inds)
@@ -247,7 +255,7 @@ def process_Standard_Season_pickedpdf(picked_files,orig_radar_dir,layer_save, cr
                                 twtt_temp[ki] = layer_times
                                 layer_data['picks'].append(twtt_temp)
        
-                        ndh.savemat(layer_data,save_fn)
+                        savemat(layer_data,save_fn)
                 else:
                     empty_frames.append(ind1)
             else:
@@ -266,4 +274,3 @@ def process_Standard_Season_pickedpdf(picked_files,orig_radar_dir,layer_save, cr
         if delete_flag == 1:
             os_cmd = 'rm -r %s' % (comb_deconstruct_dir)
             os.system(os_cmd)
-        

@@ -2,21 +2,28 @@ import numpy as np
 import tqdm
 
 
-def delay_doppler(radar_data, window_size=150, target_ind=0, ind_spacing=50, spacing_ind0_or_dist1=1, deg0_or_rad1=0, return_fft=1, airborne0_or_groundbased1=0, center_freq=0):
+def delay_doppler(radar_data, window_size=150, target_ind=0, ind_spacing=50, spacing_ind0_or_dist1=1, deg0_or_rad1=0, return_fft=1, center_freq=0):
     """
     % (C) Peter Klisewicz - Amherst College - 2025
-    %     Nick Holschuh - Amherst College - 2025 (Nick.Holschuh@gmail.com)
+    %     Nick Holschuh - Amherst College - 2025 (Nick.Holschuh@gmail.com)W
     % This function uses a complex radar image and computes the delay-doppler spectrum
     % from the data. 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are as follows:
     %
     %      radar_data - original radar data loaded with ndh.radar_load
-    %      target ind - A specific index in the radar image. If 0, calculate over a rolling window
     %      window_size - The number of samples to include in the fft
-    %      deg 
+    %      target ind - A specific index in the radar image. If 0, calculate over a rolling window
+    %      ind_spacing - The spacing between doppler spectra calculation, in either distance or samples (defined below)
+    %      spacing_ind0_or_dist1 - [1] define the ind_spacing as distance, or 0 number of samples
+    %      deg0_or_rad1 - [0] output slopes in degrees or 1 radians
+    %      return_fft - [1] store the doppler spectrum, or 0 don't
+    %      center_freq - [0] either 0 to determine from the data, or the center frequency new Hz
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % The outputs are:
+    %
+    %       doppler_data - dictionary containing results
     """
 
     c = 299792458
@@ -81,7 +88,7 @@ def delay_doppler(radar_data, window_size=150, target_ind=0, ind_spacing=50, spa
     else:
         target_inds = [target_ind]
 
-    #GET SPACIAL SEPARATION BETWEEN OBSERVATIONS
+    #GET SPATIAL SEPARATION BETWEEN OBSERVATIONS
     ind_window = int(window_size/dist_step/2)
 
     ki = np.where(np.all([target_inds > ind_window, target_inds < len(distance)-ind_window],axis=0))[0]
@@ -92,7 +99,6 @@ def delay_doppler(radar_data, window_size=150, target_ind=0, ind_spacing=50, spa
     else:
         at_volume = []
 
-    
     for ind0,target_ind in enumerate(tqdm.tqdm(target_inds[ki])):
         #GET INDICES TO ANALYZE
         track_lower_ind = target_ind-ind_window
@@ -104,8 +110,6 @@ def delay_doppler(radar_data, window_size=150, target_ind=0, ind_spacing=50, spa
             dx_axis = wavenum*system_center_f/c
             slope_axis = np.arcsin(dx_axis)
             
-    
-    
         ### PERFORM FFT
         fft = np.fft.fft(radar_image[:,track_lower_ind:track_higher_ind], axis=1)
         fft = np.fft.fftshift(fft, axes=1)

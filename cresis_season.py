@@ -36,7 +36,8 @@ def cresis_season(y,m=0,d=0,ant1_gre2=1):
     """     
 
     ########################### Here we find the season metadata. This file was produced
-    ########################### from an external matlab script named
+    ########################### from an external matlab script named "cresis_season"
+    ########################### and can be found in /Matlab_Code/NDH_Tools/NDH_CReSIS_Tools/cresis_season.m
     season_metadata_path = os.path.dirname(os.path.abspath(__file__))
     season_opts = loadmat(season_metadata_path+'/season_metadata.mat')
     

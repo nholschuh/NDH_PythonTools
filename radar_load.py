@@ -7,7 +7,6 @@ from .elevation_shift import elevation_shift
 from .distance_vector import distance_vector
 from .depth_shift import depth_shift
 from .find_nearest_xy import find_nearest_xy
-from .generate_animation import generate_animation
 from .loadmat import loadmat
 from .polarstereo_fwd import polarstereo_fwd
 from .str_compare import str_compare
@@ -52,8 +51,7 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
 
             ############################################################################################
             ############### A set of helper function to clean up the parameter sections of spreadsheets
-
-            ###############################################################################################
+            ############################################################################################
             
             keylist = radar_data.keys()
             param_cleanup = 0
@@ -62,10 +60,36 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
                     if isinstance(radar_data[key],dict) == 0:
                         radar_data[key] = struct_to_dict(radar_data[key])
                         param_cleanup = 1
+
+            try:
+                system_center_f = radar_data['param_sar']
+                try:
+                    system_center_f = system_center_f['radar']['wfs'][0]['fc']
+                except:
+                    raise ValueError("The parameter structure you've provided didn't have the center frequency in the expected location.")
+            except:
+                try:
+                    system_center_f = radar_data['param_qlook']
+                    try:
+                        system_center_f = system_center_f['radar']['wfs'][0]['fc']
+                    except:
+                        raise ValueError("The parameter structure you've provided didn't have the center frequency in the expected location.")
+                except:
+                    try:
+                        system_center_f = radar_data['param_array']
+                        try:
+                            system_center_f = system_center_f['radar']['wfs'][0]['fc']
+                        except:
+                            raise ValueError("The parameter structure you've provided didn't have the center frequency in the expected location.")
+                    except:
+                      system_center_f = np.nan
+
+            radar_data['fc'] = system_center_f
+                        
             if param_cleanup == 1:
-                print('Fixed parameter structure')
+                #print('Fixed parameter structure')
+                pass
                 
-            
             if 'Bottom' not in radar_data.keys():
                 radar_data['Bottom'] = np.zeros(radar_data['Surface'].shape)*np.nan
             
@@ -161,6 +185,8 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
             depth_data = depth_shift(radar_data['Data2'],radar_data['Time'],radar_data['Surface'],radar_data['Elevation'],radar_data['Bottom'])
         else:
             depth_data = depth_shift(radar_data['Data'],radar_data['Time'],radar_data['Surface'],radar_data['Elevation'],radar_data['Bottom'])
+    else:
+        depth_data = 'No depth data requested' 
             
     ##############################################################################################################
     ############# Here we either plot the data or deliver a plot string for future use

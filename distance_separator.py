@@ -1,9 +1,11 @@
 import numpy as np
 
-import sys
-sys.path.append('/mnt/data01/Code/')
-from NDH_Tools import distance_vector
-from NDH_Tools import list_separator
+################## NDH Tools self imports
+###########################################################
+from .distance_vector import distance_vector
+from .list_separator import list_separator
+###########################################################
+
 
 def distance_separator(in_x,in_y,distance_sep,output_type=0):
     """

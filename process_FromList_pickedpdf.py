@@ -1,16 +1,22 @@
-################ This is the import statement required to reference scripts within the package
-import os,sys,glob
-ndh_tools_path_opts = [
-    '/mnt/data01/Code/',
-    '/home/common/HolschuhLab/Code/',
-    '/kucresis/scratch/dataproducts/opr_data/opr_tmp/'
-]
-for i in ndh_tools_path_opts:
-    if os.path.isfile(i): sys.path.append(i)
-################################################################################################
+import glob
+import os
+import numpy as np
+import matplotlib.pyplot as plt
 
+from PIL import Image
+import cv2
 
+from tqdm import tqdm, tqdm_notebook
 
+################## NDH Tools self imports
+###########################################################
+from .find_nearest import find_nearest
+from .minmax import minmax
+from .loadmat import loadmat
+from .find_pixelcoords import find_pixelcoords
+from .savemat import savemat
+###########################################################
+   
 
 def process_FromList_pickedpdf(picked_files,orig_fn_list,layer_save, cresis_flag=1, layer_save_type=1, 
     delete_flag=1, layer_load='', find_rows_from_fullimageset = 0):
@@ -40,18 +46,6 @@ def process_FromList_pickedpdf(picked_files,orig_fn_list,layer_save, cresis_flag
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     """ 
 
-    import glob
-    import os
-    import numpy as np
-    import matplotlib.pyplot as plt
-    
-    from PIL import Image
-    import cv2
-    
-    from tqdm import tqdm, tqdm_notebook
-
-    import NDH_Tools as ndh
-    
     deconstruct_dir = 'Picked_Temp'
     deconstruct_flag = 1
     if layer_save_type == 1:
@@ -148,7 +142,7 @@ def process_FromList_pickedpdf(picked_files,orig_fn_list,layer_save, cresis_flag
                     
             if 'im_frame' in locals():   
                 #plt.imshow(im_frame)
-                selected_rows = ndh.minmax(np.where(im_frame > 0)[0])
+                selected_rows = minmax(np.where(im_frame > 0)[0])
                 #print(selected_rows)
             else: 
                 find_rows_from_fullimageset = 0
@@ -160,17 +154,17 @@ def process_FromList_pickedpdf(picked_files,orig_fn_list,layer_save, cresis_flag
         empty_frames = []
         for ind1,frame_fn in enumerate(tqdm(frame_list)):
             ##### Confirm that file is associated with the right frame
-            frame_data = ndh.loadmat(standard_fns[ind1])
+            frame_data = loadmat(standard_fns[ind1])
             times = frame_data['Time']
                 
             original_width = len(frame_data['Bottom'])-1
-            height_index = ndh.find_nearest(frame_data['Time'],np.nanmax(frame_data['Bottom']))
+            height_index = find_nearest(frame_data['Time'],np.nanmax(frame_data['Bottom']))
             original_height = len(frame_data['Time'])
 
             if find_rows_from_fullimageset == 0:
-                picks = ndh.find_pixelcoords(frame_fn,original_width,original_height,im_pick_params=[[2,25,1,10,1]])  
+                picks = find_pixelcoords(frame_fn,original_width,original_height,im_pick_params=[[2,25,1,10,1]])  
             else:
-                picks = ndh.find_pixelcoords(frame_fn,original_width,original_height,im_pick_params=[[2,25,1,10,1]], predefined_row_inds=selected_rows)
+                picks = find_pixelcoords(frame_fn,original_width,original_height,im_pick_params=[[2,25,1,10,1]], predefined_row_inds=selected_rows)
 
                 
         
@@ -195,7 +189,7 @@ def process_FromList_pickedpdf(picked_files,orig_fn_list,layer_save, cresis_flag
                         layer_data = {'picks':[],'Latitude':frame_data['Latitude'],'Longitude':frame_data['Longitude'],
                                       'Elevation':frame_data['Elevation'],'Surface':frame_data['Surface'],'Bottom':frame_data['Bottom']}
                     elif len(layer_load) > 0:
-                        layer_data = ndh.loadmat(layer_load_fns[ind1])
+                        layer_data = loadmat(layer_load_fns[ind1])
                         layer_ids = layer_data['id']
                         layer_quality = layer_data['quality']
                         layer_twtt = layer_data['twtt']
@@ -214,7 +208,7 @@ def process_FromList_pickedpdf(picked_files,orig_fn_list,layer_save, cresis_flag
                             ######## For some reason layer files and the image have different sizes.
                             ######## so we have to interpolate the pick indecies onto the gpstime...
                             ki_times = np.squeeze(frame_data['GPS_time'][ki])
-                            ki_layer, new_ki = np.unique(ndh.find_nearest(layer_data['gps_time'],np.squeeze(ki_times))['index'],return_index=True)
+                            ki_layer, new_ki = np.unique(find_nearest(layer_data['gps_time'],np.squeeze(ki_times))['index'],return_index=True)
         
                             twtt_temp = basic_infill_object*np.nan
                             twtt_temp[ki_layer] = ki_times[new_ki]
@@ -236,7 +230,7 @@ def process_FromList_pickedpdf(picked_files,orig_fn_list,layer_save, cresis_flag
                         layer_data['type'] = layer_type
         
         
-                    ndh.savemat(layer_data,layer_fns[ind1])
+                    savemat(layer_data,layer_fns[ind1])
                 else:
                     empty_frames.append(ind1)
     

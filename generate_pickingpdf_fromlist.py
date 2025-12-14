@@ -2,6 +2,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
+################## NDH Tools self imports
+###########################################################
+from .find_nearest import find_nearest
+from .radar_load import radar_load
+from .remove_image import remove_image
+from .remove_line import remove_line
+from .str_compare import str_compare
+###########################################################
 
 def generate_pickingpdf_fromlist(fn_list,picking_root_dir='./',clims=[], alternative_data_opt=0):
     """

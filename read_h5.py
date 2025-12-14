@@ -1,7 +1,10 @@
-import sys
-sys.path.append('/mnt/data01/Code/')
 import h5py
 import numpy as np
+
+################## NDH Tools self imports
+###########################################################
+from .remove_key import remove_key
+###########################################################
 
 def read_h5(fn,keylist=[],verbose_flag=0):
     """
@@ -24,8 +27,6 @@ def read_h5(fn,keylist=[],verbose_flag=0):
     %% Note: This only goes 6 groups deep. If you need more than that, this will need to be modified
 
     """
-    from NDH_Tools import remove_key
-    
     def get_ds_dictionaries(name, node):
         fullname = node.name
         group_info = fullname.split('/')

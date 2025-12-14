@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import glob
 
 ################## NDH Tools self imports
 ###########################################################
@@ -16,7 +17,7 @@ from .str_compare import str_compare
 ###########################################################
 
 
-def generate_pickingpdf(fn,picking_root_dir='',frame_spacing=25,surf_dir='CSARP_surf_ndh',crop_type='100',clims=[], alternative_data_opt=0):
+def generate_pickingpdf(fn,picking_root_dir='./',frame_spacing=25,surf_dir='CSARP_surf_ndh',crop_type='100',clims=[], alternative_data_opt=0):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
     %

@@ -1,8 +1,9 @@
 from email import generator
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
 
-def DraftEmail(subject=None, emailto=None, body=[], fname='DraftEmail.eml',emailfrom='nholschuh@amherst.edu'):
+def DraftEmail(subject=None, emailto=None, body=[], fname='DraftEmail.eml',emailfrom='nholschuh@amherst.edu',attach=0):
     """
     % (C) Nick Holschuh - Amherst College - 2022 (Nick.Holschuh@gmail.com)
     % This function produces a .eml file that can be added to drafts in 
@@ -49,6 +50,13 @@ def DraftEmail(subject=None, emailto=None, body=[], fname='DraftEmail.eml',email
         else:
             part = MIMEText(body, 'plain')
         msg.attach(part)
+
+        if isinstance(attach,str):
+            with open(attach, 'rb') as f:
+                pdf_part = MIMEApplication(f.read(), _subtype='pdf')
+                pdf_part.add_header('Content-Disposition', 'attachment', filename=attach.split('/')[-1])
+                msg.attach(pdf_part)
+
     
         with open(fname, 'w') as outfile:
             gen = generator.Generator(outfile)
