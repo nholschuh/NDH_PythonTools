@@ -48,6 +48,13 @@ def radar_load(fn,plot_flag=0,elevation1_or_depth2=1,alternative_data_opt=0,trac
         
         if fn_ind == 0:
             radar_data = loadmat(fn_temp);
+            
+            if len(radar_data['Elevation'].shape) == 2:
+                for key_opt in concat_list:
+                    radar_data[key_opt] = np.squeeze(radar_data[key_opt])
+
+            if len(radar_data['Time'].shape) == 2:
+                radar_data['Time'] = np.squeeze(radar_data['Time'])
 
             ############################################################################################
             ############### A set of helper function to clean up the parameter sections of spreadsheets

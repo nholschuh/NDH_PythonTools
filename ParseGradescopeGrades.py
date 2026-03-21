@@ -89,7 +89,7 @@ def ParseGradescopeGrades(ex_file,summary_plot_flag=1,emails_flag=1,
         
         plt.subplot(1,2,2)
         plt.hist(score_percentage*100,np.arange(0,102,2),color='blue')
-        plt.xlim(np.min([50,np.min(score_percentage)*100]),100)
+        plt.xlim(np.min([50,np.nanmin(score_percentage)*100]),100)
         plt.xlabel('Score %')
         plt.ylabel('Count')
         vals = np.arange(0,100,10)
@@ -100,7 +100,7 @@ def ParseGradescopeGrades(ex_file,summary_plot_flag=1,emails_flag=1,
                 plt.text(val+5,2,str(np.sum(score_percentage>(val/100))-counter))
             counter = np.sum(score_percentage>(val/100))
         
-        plt.title('Mean: %0.2f%%' % (np.mean(score_percentage)*100))
+        plt.title('Mean: %0.2f%%' % (np.nanmean(score_percentage)*100))
             
     
     if emails_flag == 1:

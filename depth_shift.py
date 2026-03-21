@@ -150,10 +150,10 @@ def depth_shift(data,time,surface,elevation,bed=[],disp_flag=0):
 
     ## This computes the bed elevation if it is supplied
     if len(bed) > 0:
-        bed_elev = thickness;
+        bed_elev = surface_elev-thickness;
     else:
         bed_elev = np.ones(surface_elev.shape)*np.NaN;
         
     multiple=multiple_thickness
 
-    return {'new_data':new_data1, 'shift_amount':shift_amount, 'depth_axis':depth_axis, 'surface_elev':surface_elev, 'bed_elev':bed_elev, 'multiple':multiple}
+    return {'new_data':new_data1, 'shift_amount':shift_amount, 'depth_axis':depth_axis, 'surface_elev':surface_elev, 'bed_elev':bed_elev, 'thickness':thickness, 'multiple':multiple}

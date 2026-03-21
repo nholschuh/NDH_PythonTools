@@ -1,5 +1,6 @@
 import xarray as xr
 import numpy as np
+import os
 
 def spreading_correction(flight_elev, twtt, bed_power_dB=[]):
     """
@@ -48,7 +49,7 @@ def spreading_correction(flight_elev, twtt, bed_power_dB=[]):
     ##### Built from Matlab 'Generate_SpreadingMatrix.m'
     ##### Converted to NC from 'Develop_spreadingcorrection.ipynb'
     correction_root_dir = os.path.dirname(os.path.abspath(__file__))
-    spreading_correction_vals = xr.open_dataset(correction_root_dir+'SpreadingCorrection.nc')
+    spreading_correction_vals = xr.open_dataset(correction_root_dir+'/SpreadingCorrection.nc')
     
     x_search = xr.DataArray(flight_elev,dims=['vector_index'])
     y_search = xr.DataArray(twtt,dims=['vector_index'])

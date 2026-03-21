@@ -75,11 +75,11 @@ def line_fill(segmat,value,density0_or_distance1, start=0, stop=0, keep_vertices
     ###################     
     else:
         
-        dist_vec2 = ndh.distance_vector(segmat[:,0],segmat[:,1],1)
+        dist_vec2 = distance_vector(segmat[:,0],segmat[:,1],1)
         remove_rows = np.where(dist_vec2 == 0)[0]
 
         segmat = np.delete(segmat,remove_rows,0)
-        dist_vec = ndh.distance_vector(segmat[:,0],segmat[:,1])
+        dist_vec = distance_vector(segmat[:,0],segmat[:,1])
         
         if stop == 0:
             new_dist = np.arange(start,np.max(dist_vec),value)
@@ -92,7 +92,7 @@ def line_fill(segmat,value,density0_or_distance1, start=0, stop=0, keep_vertices
         ############## This section maintains the vertices in the data
         if keep_vertices == 1:
             angle_thresh = 0.1
-            headings = ndh.heading(segmat[:,0],segmat[:,1])
+            headings = heading(segmat[:,0],segmat[:,1])
             headings_change = np.abs(np.diff(headings))
             keep_inds = np.where(headings_change > angle_thresh)[0]
             add_dists = dist_vec[keep_inds]
