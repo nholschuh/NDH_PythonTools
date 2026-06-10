@@ -188,8 +188,8 @@ def read_DWG_layer(layer_name, dxf_file_data):
 
             pass
 
-        segments_x.append(np.NaN)
-        segments_y.append(np.NaN) 
+        segments_x.append(np.nan)
+        segments_y.append(np.nan) 
         entry_type.append(10)
         entry_num.append(ind)
         

@@ -31,6 +31,6 @@ def interpNaN(y,nan_ends=0):
     y[nans] = np.interp(x(nans), x(~nans), y[~nans])
 
     if nan_ends == 1:
-        y[:notnans[0]] = np.NaN
-        y[notnans[-1]+1:] = np.NaN
+        y[:notnans[0]] = np.nan
+        y[notnans[-1]+1:] = np.nan
     return y

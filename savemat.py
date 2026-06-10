@@ -48,7 +48,7 @@ def savemat(matfiledata,fn,debug_flag=0):
             #    os.remove(fn)
             #except:
             #    pass
-            hdf5storage.write(matfiledata, '.', fn, matlab_compatible=True)
+            hdf5storage.savemat(fn, matfiledata, format='7.3')
             if debug_flag == 1:
                 print('Written using the hdf5 writer')
         except:

@@ -152,7 +152,7 @@ def depth_shift(data,time,surface,elevation,bed=[],disp_flag=0):
     if len(bed) > 0:
         bed_elev = surface_elev-thickness;
     else:
-        bed_elev = np.ones(surface_elev.shape)*np.NaN;
+        bed_elev = np.ones(surface_elev.shape)*np.nan;
         
     multiple=multiple_thickness
 

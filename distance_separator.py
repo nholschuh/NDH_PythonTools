@@ -58,7 +58,7 @@ def distance_separator(in_x,in_y,distance_sep,output_type=0):
         ind_adjust = np.cumsum(ind_adjust)
 
     if output_type == 0:
-        out_xy = np.ones([len(dists)+len(naninds),3])*np.NaN
+        out_xy = np.ones([len(dists)+len(naninds),3])*np.nan
     
         orig_ind = np.arange(0,len(in_x))
         orig_ind = orig_ind+ind_adjust

@@ -51,9 +51,9 @@ def convert_to_cresis(filelist,remove_totaldata=0,savename='',depthcap=0,at_samp
     
         ################## We create a Bottom object if needed
         if 'Surface' not in radar_data.keys():
-            radar_data['Surface'] = radar_data['Latitude'].copy()*np.NaN
+            radar_data['Surface'] = radar_data['Latitude'].copy()*np.nan
         if 'Bottom' not in radar_data.keys():
-            radar_data['Bottom'] = radar_data['Surface'].copy()*np.NaN
+            radar_data['Bottom'] = radar_data['Surface'].copy()*np.nan
     
         ################## Calculate Polarstereo coordinates
         xy = polarstereo_fwd(radar_data['Latitude'], radar_data['Longitude'])

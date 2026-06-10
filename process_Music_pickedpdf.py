@@ -63,7 +63,7 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
     surf_data = loadmat(surf_fn)
     print(music_fn)
     times = loadmat(music_fn,['Time'])['Time'][0]
-    surf_pick = np.ones(surf_data['surf']['y'][3].shape)*np.NaN
+    surf_pick = np.ones(surf_data['surf']['y'][3].shape)*np.nan
 
     ######## These are the properties of the original file that need to be provided to the image processing
     original_width = len(surf_pick[:,0])
@@ -75,15 +75,15 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
     if keep_initial_bot == 1:
         bottom_picks = surf_data['surf']['y'][3]
     else:
-        bottom_picks = np.ones(surf_data['surf']['y'][3].shape)*np.NaN
+        bottom_picks = np.ones(surf_data['surf']['y'][3].shape)*np.nan
         
-    edge_trim = np.ones(surf_data['surf']['y'][3].shape)*np.NaN
+    edge_trim = np.ones(surf_data['surf']['y'][3].shape)*np.nan
     angle_len = len(edge_trim[:,0])
     debris_edge = []
     debris_picks = []
     for i in range(4):
-        debris_picks.append(np.ones(surf_data['surf']['y'][3].shape)*np.NaN)
-        debris_edge.append(np.ones(surf_data['surf']['y'][3].shape)*np.NaN)
+        debris_picks.append(np.ones(surf_data['surf']['y'][3].shape)*np.nan)
+        debris_edge.append(np.ones(surf_data['surf']['y'][3].shape)*np.nan)
 
     ##########################################################################################################
     # Part 4 ###################################################################################################
@@ -228,12 +228,12 @@ def process_Music_pickedpdf(fn,data_dir,surf_load,music_load,surf_save,only_edge
 
     for ind1 in range(gt_spacing-1):
         rep_rows = np.arange(start_rep+ind1,len(bottom_picks[:,0]),gt_spacing)
-        bottom_picks[rep_rows,:] = np.NaN
+        bottom_picks[rep_rows,:] = np.nan
         for ind2 in range(len(debris_picks)):
-            debris_picks[ind2][rep_rows,:] = np.NaN
+            debris_picks[ind2][rep_rows,:] = np.nan
 
     for ind1 in blank_angles:
-        bottom_picks[ind1,:] = np.NaN
+        bottom_picks[ind1,:] = np.nan
 
 
     ######### Here we actually save the files

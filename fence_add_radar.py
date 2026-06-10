@@ -46,7 +46,7 @@ def fence_add_radar(plotter,radar_data,depth_data,depth_cutoff_val=500,depth_ds=
     if nan_surface == 1:
         for ind in np.arange(len(depth_data['surface_elev'][::horiz_ds])):
             blank_ind = find_nearest(depth_data['depth_axis'],depth_data['surface_elev'][ind*horiz_ds])
-            intensity_grid[0:int(blank_ind['index'][0]/depth_ds),ind] = np.NaN
+            intensity_grid[0:int(blank_ind['index'][0]/depth_ds),ind] = np.nan
 
 
     # 1. Create your mesh just like before

@@ -39,7 +39,7 @@ def get_contour_data(contour_object,simplify_flag=0,simplify_threshold=100):
         new_clines = np.empty(shape=(0,3))
         for ind0,subline in enumerate(clines):
             if len(subline) > simplify_threshold:
-                new_clines = np.concatenate([new_clines,np.ones([1,3])*np.NaN,np.array(subline)])
+                new_clines = np.concatenate([new_clines,np.ones([1,3])*np.nan,np.array(subline)])
     else:
         new_clines = clines 
         

@@ -87,8 +87,8 @@ def graphical_selection(points_object,style_arguments={},lock_to=0):
             
         ######################### Right Click
         elif event.button == 3:
-            updated_xs = np.concatenate([points_object[0].get_xdata(),[np.NaN]])
-            updated_ys = np.concatenate([points_object[0].get_ydata(),[np.NaN]])
+            updated_xs = np.concatenate([points_object[0].get_xdata(),[np.nan]])
+            updated_ys = np.concatenate([points_object[0].get_ydata(),[np.nan]])
             points_object[0].set_xdata(updated_xs)
             points_object[0].set_ydata(updated_ys)
             points_object[0].__dict__['meta_ndh'] = np.concatenate([points_object[0].__dict__['meta_ndh'],np.ones(1)*1])

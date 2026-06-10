@@ -91,7 +91,7 @@ def animate_delay_doppler2_music(videoname,radar_data,depth_data,music_data1,dop
         if np.min(np.isnan(corrections['raytracing'])) == 1:
             skip_flag = 1
     except:
-        corrections = {'raytracing':np.ones(radar_data['Elevation'].shape)*np.NaN}
+        corrections = {'raytracing':np.ones(radar_data['Elevation'].shape)*np.nan}
         skip_flag = 1
 
     spreading_corrected_power_window = bed_power_window-corrections['raytracing']

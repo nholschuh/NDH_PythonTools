@@ -50,8 +50,8 @@ def edgetrim_mask(edge_trim_array, debug_flag=0, start_trim=0, end_trim=0, addit
         mask[:,:] = 1
         print('There were no edgetrim picks in this file')
     else:
-        left_row_interpolator = interp1d(et_col[left_ind],et_row[left_ind]+additional_narrowing,fill_value=np.NaN,bounds_error=0)
-        right_row_interpolator = interp1d(et_col[right_ind],et_row[right_ind]-additional_narrowing,fill_value=np.NaN,bounds_error=0)
+        left_row_interpolator = interp1d(et_col[left_ind],et_row[left_ind]+additional_narrowing,fill_value=np.nan,bounds_error=0)
+        right_row_interpolator = interp1d(et_col[right_ind],et_row[right_ind]-additional_narrowing,fill_value=np.nan,bounds_error=0)
     
         left_row = left_row_interpolator(col_opts).astype(int)
         right_row = right_row_interpolator(col_opts).astype(int)
@@ -67,7 +67,7 @@ def edgetrim_mask(edge_trim_array, debug_flag=0, start_trim=0, end_trim=0, addit
             mask[:,-i] = 0
             
 
-    mask[mask == 0] = np.NaN
+    mask[mask == 0] = np.nan
     
     
     if debug_flag:
