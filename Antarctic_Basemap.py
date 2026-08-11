@@ -1,6 +1,7 @@
 import xarray as xr
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 
 def Antarctic_Basemap(base=0,xs=[0],ys=[0],gl=0,ax=0,base_varname=0,m0_or_km1=0):
     """

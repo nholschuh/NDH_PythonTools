@@ -115,7 +115,10 @@ def loadmat(fn, varnames=None ,debug_flag = 0, force_method=0):
     ################################ Forcing a particular method for testing
     if isinstance(data,tuple) == 1:
         data = data[0]
-        
+
+
+    data = {k: dict(zip(v.dtype.names, v.item())) if hasattr(v, 'dtype') and v.dtype.names else v for k, v in data.items()}
+
     return data
     
     
