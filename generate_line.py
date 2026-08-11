@@ -1,3 +1,5 @@
+import numpy as np
+
 def generate_line(start_point, heading, num_points, spacing, orthogonal=0, degrees=False):
     """
     Generates a sequence of 2D points along a specified heading or orthogonal to it.
