@@ -117,7 +117,10 @@ def loadmat(fn, varnames=None ,debug_flag = 0, force_method=0):
         data = data[0]
 
 
-    data = {k: dict(zip(v.dtype.names, v.item())) if hasattr(v, 'dtype') and v.dtype.names else v for k, v in data.items()}
+    ############### Unpack scalar matlab structs into dictionaries. Struct *arrays* (size > 1) are left
+    ############### alone -- .item() only works on size-1 arrays, and callers index them positionally
+    ############### (e.g. cresis_season reading a_names/g_names out of season_metadata.mat)
+    data = {k: dict(zip(v.dtype.names, v.item())) if hasattr(v, 'dtype') and v.dtype.names and v.size == 1 else v for k, v in data.items()}
 
     return data
     

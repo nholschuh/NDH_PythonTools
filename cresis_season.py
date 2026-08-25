@@ -64,7 +64,8 @@ def cresis_season(y,m=0,d=0,ant1_gre2=1):
 
     if len(match_ind) == 0:
         match_ind = find_nearest(full_dates[:,0],target_date);
-        match_ind = match_ind['index'][0]
+        ############### Keep this as a length-1 array, so the len() checks below still work
+        match_ind = np.atleast_1d(match_ind['index'][0])
         exact_flag = 0;
 
     if ant1_gre2 == 1:
