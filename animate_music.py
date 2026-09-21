@@ -75,7 +75,7 @@ def animate_music(videoname,music_data,frame_skip=10,ymax=30,center_ind=0,min_am
     
             ############## The direction of arrival image
             imdata = ax1.imshow(10*np.log10(music_data['Tomo']['img'][:,:,slide_ind]),
-                                extent=[theta_deg[0][0],theta_deg[-1][0],
+                                extent=[theta_deg[0],theta_deg[-1],
                                         music_data['Time'][0]*1e6,music_data['Time'][-1]*1e6],
                                 origin='lower',aspect='auto',cmap='gray_r',vmax=max_amp,vmin=min_amp)    
     

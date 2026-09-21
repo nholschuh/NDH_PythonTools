@@ -9,6 +9,19 @@ from .loadmat import loadmat
 from .polarstereo_fwd import polarstereo_fwd
 ###########################################################
 
+def _tomo_from_old_format(music_data):
+    """
+    Older CReSIS MUSIC files (e.g. CSARP_NDH_music for 2009_Antarctica_TO) store the 3D volume as
+    'Topography' (with 'img' as time x angle x trace) and a 1D 'theta' at the top level. Newer files
+    store it as 'Tomo', with 'theta' as a 2D (angle x subaperture) array. This moves the old layout
+    into the new one so downstream functions only need to handle 'Tomo'.
+    """
+    if 'Tomo' not in music_data.keys() and 'Topography' in music_data.keys():
+        music_data['Tomo'] = music_data.pop('Topography')
+        music_data['Tomo']['theta'] = np.reshape(np.ravel(music_data['theta']),(-1,1))
+    return music_data
+
+
 def radar_load_music(fn):
     """
     % (C) Nick Holschuh - Amherst College -- 2022 (Nick.Holschuh@gmail.com)
@@ -18,7 +31,8 @@ def radar_load_music(fn):
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % The inputs are:
     %
-    %     fn -- the input filename or list of filenames to be read
+    %     fn -- the input filename or list of filenames to be read. Older files that store the
+    %           volume as 'Topography' (with a 1D 'theta') are converted to the newer 'Tomo' layout
     %
     %%%%%%%%%%%%%%%
     % The outputs are:
@@ -37,7 +51,7 @@ def radar_load_music(fn):
     for fn_ind,fn_temp in enumerate(fn):
         
         if fn_ind == 0:
-            radar_data = loadmat(fn_temp);
+            radar_data = _tomo_from_old_format(loadmat(fn_temp))
             xy = polarstereo_fwd(radar_data['Latitude'],radar_data['Longitude'])
             distance = distance_vector(xy['x'],xy['y'])
             radar_data['x'] = xy['x']
@@ -49,7 +63,7 @@ def radar_load_music(fn):
             
         if fn_ind > 0:
             
-            radar_data_temp = loadmat(fn_temp)
+            radar_data_temp = _tomo_from_old_format(loadmat(fn_temp))
             xy_temp = polarstereo_fwd(radar_data_temp['Latitude'],radar_data_temp['Longitude'])
             
             ########## Here we deal with potentially overlapping frames
