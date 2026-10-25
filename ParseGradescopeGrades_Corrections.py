@@ -94,31 +94,41 @@ def ParseGradescopeGrades_Corrections(original_fn,revisions_fn,correction_frac=0
     original_total = np.sum(original_score,axis=1)
     original_total_percent = np.sum(original_score/original_max*100,axis=1)
     final_total = original_total+correction_total
-
-    sort_order = np.argsort(original_total)[::-1]
-
-    ###### Letter grades on the usual cutoffs, as a fraction of the total possible. Everyone on the
-    ###### roster is counted, so a student who never submitted sits in F at both stages.
-    grade_floors = np.array([0.9,0.8,0.7,0.6,0.0])
-    grade_names = ['A','B','C','D','F']
-
-    before_counts = np.zeros(len(grade_names),dtype=int)
-    after_counts = np.zeros(len(grade_names),dtype=int)
-    for ind0,floor in enumerate(grade_floors):
-        ceiling = 2.0 if ind0 == 0 else grade_floors[ind0-1]   # nothing sits above an A
-        before_counts[ind0] = np.sum((original_total/original_max >= floor)&(original_total/original_max < ceiling))
-        after_counts[ind0] = np.sum((final_total/original_max >= floor)&(final_total/original_max < ceiling))
-
-    ###### The summary statistics are reported as a percentage of the total possible
     final_total_percent = final_total/original_max*100
-    before_range = np.max(original_total_percent)-np.min(original_total_percent)
-    after_range = np.max(final_total_percent)-np.min(final_total_percent)
 
     # First name plus last initial -- two students sharing a first name would otherwise
     # land on the same bar, and .to_numpy() keeps this positional alongside sort_order
     first_names = np.array(grades_dicts[0]['First_Names'].to_list())
     last_names = np.array(grades_dicts[0]['Last_Names'].to_list())
     bar_labels = np.array([f'{x} {y[0]}.' for x,y in zip(first_names,last_names)])
+
+    ###### A student who still totals zero after corrections never handed anything in. They are
+    ###### dropped from the figure and the summary statistics, where six automatic zeros drag the
+    ###### mean down and pin the range to the full scale, but they stay in the printout below.
+    submitted = final_total > 0
+
+    plot_labels = bar_labels[submitted]
+    plot_total = original_total[submitted]
+    plot_correction = correction_total[submitted]
+    plot_percent = original_total_percent[submitted]
+    plot_final_percent = final_total_percent[submitted]
+
+    sort_order = np.argsort(plot_total)[::-1]
+
+    ###### Letter grades on the usual cutoffs, as a percentage of the total possible
+    grade_floors = np.array([90,80,70,60,0])
+    grade_names = ['A','B','C','D','F']
+
+    before_counts = np.zeros(len(grade_names),dtype=int)
+    after_counts = np.zeros(len(grade_names),dtype=int)
+    for ind0,floor in enumerate(grade_floors):
+        ceiling = 200 if ind0 == 0 else grade_floors[ind0-1]   # nothing sits above an A
+        before_counts[ind0] = np.sum((plot_percent >= floor)&(plot_percent < ceiling))
+        after_counts[ind0] = np.sum((plot_final_percent >= floor)&(plot_final_percent < ceiling))
+
+    ###### The summary statistics are reported as a percentage of the total possible
+    before_range = np.max(plot_percent)-np.min(plot_percent)
+    after_range = np.max(plot_final_percent)-np.min(plot_final_percent)
 
     if summary_plot_flag == 1:
         # Open a wide figure as ParseGradescopeGrades does -- at the default size a full
@@ -129,10 +139,10 @@ def ParseGradescopeGrades_Corrections(original_fn,revisions_fn,correction_frac=0
         ax = plt.subplot(1,4,(1,3))
 
         # The first layer sits at the bottom (no 'bottom' parameter needed)
-        ax.bar(bar_labels[sort_order], original_total[sort_order], label='Original Score')
+        ax.bar(plot_labels[sort_order], plot_total[sort_order], label='Original Score')
 
         # The second layer sits on top of group1
-        ax.bar(bar_labels[sort_order], correction_total[sort_order], bottom=original_total[sort_order], label='Corrections',color='orange')
+        ax.bar(plot_labels[sort_order], plot_correction[sort_order], bottom=plot_total[sort_order], label='Corrections',color='orange')
         plt.xticks(rotation=45, ha='right') # 'ha' aligns the right edge of the text to the tick mark
 
         plt.axhline(original_max,c='black')
@@ -157,10 +167,12 @@ def ParseGradescopeGrades_Corrections(original_fn,revisions_fn,correction_frac=0
         plt.ylim(0,np.max(np.concatenate([before_counts,after_counts]))*1.25)
         plt.legend(loc='upper left')
 
-        # Monospace keeps the before/after columns lined up under one another
-        plt.title('Mean:   %5.1f%% -> %5.1f%% (%+0.1f)\nMedian: %5.1f%% -> %5.1f%% (%+0.1f)\nRange:  %5.1f%% -> %5.1f%% (%+0.1f)' % (
-                  np.mean(original_total_percent),np.mean(final_total_percent),np.mean(final_total_percent)-np.mean(original_total_percent),
-                  np.median(original_total_percent),np.median(final_total_percent),np.median(final_total_percent)-np.median(original_total_percent),
+        # Monospace keeps the before/after columns lined up under one another. The count says how
+        # many students the statistics cover, since the non-submitters are not among them.
+        plt.title('%d submissions (%d excluded)\nMean:   %5.1f%% -> %5.1f%% (%+0.1f)\nMedian: %5.1f%% -> %5.1f%% (%+0.1f)\nRange:  %5.1f%% -> %5.1f%% (%+0.1f)' % (
+                  np.sum(submitted),np.sum(~submitted),
+                  np.mean(plot_percent),np.mean(plot_final_percent),np.mean(plot_final_percent)-np.mean(plot_percent),
+                  np.median(plot_percent),np.median(plot_final_percent),np.median(plot_final_percent)-np.median(plot_percent),
                   before_range,after_range,after_range-before_range),
                   fontfamily='monospace',fontsize=9,loc='left')
 
