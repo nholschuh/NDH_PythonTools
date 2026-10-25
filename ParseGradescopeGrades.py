@@ -175,7 +175,10 @@ def ParseGradescopeGrades(ex_file,summary_plot_flag=1,emails_flag=1,
                         html_data = html_data[:-2]
                         html_data = html_data+'</p>'
         
-                        total_opts_length = total_opts_length+len(opts)
+                        # Only the revision categories count -- the "Great" list must not
+                        # suppress the no-revisions-needed message below
+                        if j < 2:
+                            total_opts_length = total_opts_length+len(opts)
         
             if total_opts_length == 0:
                 html_data = html_data+'<br><p><b> Amazing job on the exam! You do not require any revisions -- any issues you had in your responses were small. </b></p><br>'
