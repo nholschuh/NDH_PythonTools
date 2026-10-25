@@ -145,7 +145,7 @@ def ParseGradescopeGrades(ex_file,summary_plot_flag=1,emails_flag=1,
                 <head></head>
                 <body>
                     <p> Hi """+first_names[ind1]+""",</p>
-                    <p> Congratulations on finishing the first part of the exam process! Below, I provide instructions for part two: exam revisions.</p><p> Your original responses to each question could fall into one of three categories: <p>
+                    <p> Congratulations on finishing the first part of the exam process! Below, I provide instructions for part two: exam revisions.</p><p> Your original responses to each question could fall into one of three categories: </p>
                     <ul>
                       <li><em>Great</em> -- you got the major idea, and no revisions required.</li>
                       <li><em>Minor Revisions</em> -- it's clear you were thinking about things correctly, but your answer is imprecise or could otherwise be refined.</li>
