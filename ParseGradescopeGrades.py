@@ -10,7 +10,7 @@ from email.mime.text import MIMEText
 
 def ParseGradescopeGrades(ex_file,summary_plot_flag=1,emails_flag=1,
                           subject_pre = '[Geol 341] -- Assessment One Revision Guidance -- ',
-                          email_path = 'Final_RevisionsEmails',major_minor_thresh=[0.5,0.75],revision_flag=1):
+                          email_path = 'Final_RevisionsEmails',major_minor_thresh=[0.5,0.75]):
     """
     % (C) Nick Holschuh - Amherst College -- 2025 (Nick.Holschuh@gmail.com)
     %
@@ -27,7 +27,6 @@ def ParseGradescopeGrades(ex_file,summary_plot_flag=1,emails_flag=1,
     %     subject_pre -- The prefix to the email subject line
     %     email_path -- The directory to write the emails into
     %     major_minor_thresh -- This sets the percentage thresholds for major revisions and minor revisions
-    %     revision_flag -- 0 or 1, indicating whether or not to include in the email a link to a revisions document.
     %
     %%%%%%%%%%%%%%%
     % The outputs are:
@@ -35,7 +34,7 @@ def ParseGradescopeGrades(ex_file,summary_plot_flag=1,emails_flag=1,
     %     A dictionary including the summary information for the excel file
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Helpful String: summary_plot_flag=summary_plot_flag, emails_flag=emails_flag, subject_pre= subject_pre, email_path=email_path, major_minor_thresh=major_minor_thresh, revision_flag=revision_flag
+    % Helpful String: summary_plot_flag=summary_plot_flag, emails_flag=emails_flag, subject_pre= subject_pre, email_path=email_path, major_minor_thresh=major_minor_thresh
     """ 
 
     grades = pd.read_excel(ex_file)
@@ -152,7 +151,7 @@ def ParseGradescopeGrades(ex_file,summary_plot_flag=1,emails_flag=1,
                       <li><em>Minor Revisions</em> -- it's clear you were thinking about things correctly, but your answer is imprecise or could otherwise be refined.</li>
                       <li><em>Major Revisions</em> -- an important idea was missing in your response.</li>
                     </ul>
-                    <p> Your job now is to update your responses to the questions that require minor or major revisions. You can find a copy of your submitted exam (and your original responses) on gradescope. I will give you a blank copy of the exam in class. You only need to fill in responses to the questions that you intend to revise, but you should scan and upload the entire document to gradescope under the assignment named "Exam Revisions."
+                    <p> Your job now is to update your responses to the questions that require minor or major revisions. You can find a copy of your submitted exam (and your original responses) on gradescope. I will give you a blank copy of the exam in class. You only need to fill in responses to the questions that you intend to revise, but you should scan and upload the entire document to gradescope under the assignment named "Exam Revisions."</p>
                     """
                
             total_opts_length = 0
