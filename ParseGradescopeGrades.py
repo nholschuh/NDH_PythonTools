@@ -152,16 +152,9 @@ def ParseGradescopeGrades(ex_file,summary_plot_flag=1,emails_flag=1,
                       <li><em>Minor Revisions</em> -- it's clear you were thinking about things correctly, but your answer is imprecise or could otherwise be refined.</li>
                       <li><em>Major Revisions</em> -- an important idea was missing in your response.</li>
                     </ul>
-                    <p> Your job now is to update your responses to the questions that require minor or major revisions. You can find a copy of your submitted exam (and your original responses) on gradescope.
+                    <p> Your job now is to update your responses to the questions that require minor or major revisions. You can find a copy of your submitted exam (and your original responses) on gradescope. I will give you a blank copy of the exam in class. You only need to fill in responses to the questions that you intend to revise, but you should scan and upload the entire document to gradescope under the assignment named "Exam Revisions."
                     """
-        
-            if revision_flag == 1:
-                html_data =  html_data+ """
-                        The <a href="https://docs.google.com/document/d/1QsXjHgx_21fgcZi90TsWc8IB0gNv0syBF5tUfCQH8JA/edit?usp=sharing">template for your revisions can be found here,</a> and once you've filled it out, 
-                        it can be submitted through Moodle.</p>
-                 """
-        
-        
+               
             total_opts_length = 0
             for j in 2-np.arange(3):
                     opts = np.where(response_category == j)[0]
