@@ -178,7 +178,7 @@ def ParseGradescopeGrades(ex_file,summary_plot_flag=1,emails_flag=1,
                         total_opts_length = total_opts_length+len(opts)
         
             if total_opts_length == 0:
-                html_data = html_data+'<nr><p><b> Amazing job on the exam! You do not require any revisions -- any issues you had in your responses were small. </b></p><br>'
+                html_data = html_data+'<br><p><b> Amazing job on the exam! You do not require any revisions -- any issues you had in your responses were small. </b></p><br>'
                     
             
             html_data = html_data+"""<p> If you have any questions, don't hesitate to reach out! And remember, I encourage you to work together, talk with your peers, and come to office hours if you are struggling to understand
