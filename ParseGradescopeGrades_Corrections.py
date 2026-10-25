@@ -164,14 +164,26 @@ def ParseGradescopeGrades_Corrections(original_fn,revisions_fn,correction_frac=0
 
         plt.tight_layout()
 
+    ###### Pad the names and right-align the numbers to a width taken from the widest entry, so every
+    ###### value lands in the same character column and a copy-pasted block stays in register
+    name_strings = ['%s %s' % (x,y) for x,y in zip(first_names,last_names)]
+    name_width = int(np.max([len(x) for x in name_strings]))               # int() -- %*s rejects np.int64
+
+    # Pad on the integer part rather than the whole field: scores carry two decimals and
+    # corrections three, so equal field widths would still leave the decimal points a column apart
+    int_width = int(np.max([len(str(int(x))) for x in np.concatenate([original_total,final_total,correction_total])]))
+    score_width = int_width+3                                              # the '.' and two decimals
+    correction_width = int_width+4                                         # the '.' and three decimals
+
     if print_corrections == 1:
         for ind0,total in enumerate(original_total):
-            print('%s %s' % (first_names[ind0],last_names[ind0]))
+            print(name_strings[ind0])
             print ('--------------------------------')
-            print('Original Score: %0.2f \t Final Score: %0.2f' % (total, total+correction_total[ind0]))
-            print('Corrections: %0.3f' % correction_total[ind0])
+            # 'Corrections:' is padded out to the width of 'Original Score:' so the two columns agree
+            print('Original Score: %*.2f \t Final Score: %*.2f' % (score_width,total,score_width,final_total[ind0]))
+            print('Corrections:    %*.3f' % (correction_width,correction_total[ind0]))
             print(' ')
 
     if print_corrections == 2:
-        for ind0,total in enumerate(original_total):
-            print('%s %s -- Corrections: %0.3f' % (first_names[ind0],last_names[ind0],correction_total[ind0]))
+        for ind0,name in enumerate(name_strings):
+            print('%-*s -- Corrections: %*.3f' % (name_width,name,correction_width,correction_total[ind0]))
