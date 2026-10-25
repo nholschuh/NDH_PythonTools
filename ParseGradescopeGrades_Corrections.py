@@ -109,8 +109,10 @@ def ParseGradescopeGrades_Corrections(original_fn,revisions_fn,correction_frac=0
         before_counts[ind0] = np.sum((original_total/original_max >= floor)&(original_total/original_max < ceiling))
         after_counts[ind0] = np.sum((final_total/original_max >= floor)&(final_total/original_max < ceiling))
 
-    before_range = np.max(original_total)-np.min(original_total)
-    after_range = np.max(final_total)-np.min(final_total)
+    ###### The summary statistics are reported as a percentage of the total possible
+    final_total_percent = final_total/original_max*100
+    before_range = np.max(original_total_percent)-np.min(original_total_percent)
+    after_range = np.max(final_total_percent)-np.min(final_total_percent)
 
     # First name plus last initial -- two students sharing a first name would otherwise
     # land on the same bar, and .to_numpy() keeps this positional alongside sort_order
@@ -156,9 +158,9 @@ def ParseGradescopeGrades_Corrections(original_fn,revisions_fn,correction_frac=0
         plt.legend(loc='upper left')
 
         # Monospace keeps the before/after columns lined up under one another
-        plt.title('Mean:   %5.2f -> %5.2f (%+0.2f)\nMedian: %5.2f -> %5.2f (%+0.2f)\nRange:  %5.2f -> %5.2f (%+0.2f)' % (
-                  np.mean(original_total),np.mean(final_total),np.mean(final_total)-np.mean(original_total),
-                  np.median(original_total),np.median(final_total),np.median(final_total)-np.median(original_total),
+        plt.title('Mean:   %5.1f%% -> %5.1f%% (%+0.1f)\nMedian: %5.1f%% -> %5.1f%% (%+0.1f)\nRange:  %5.1f%% -> %5.1f%% (%+0.1f)' % (
+                  np.mean(original_total_percent),np.mean(final_total_percent),np.mean(final_total_percent)-np.mean(original_total_percent),
+                  np.median(original_total_percent),np.median(final_total_percent),np.median(final_total_percent)-np.median(original_total_percent),
                   before_range,after_range,after_range-before_range),
                   fontfamily='monospace',fontsize=9,loc='left')
 
